@@ -15,13 +15,5 @@ class CanonBall : MonoBehaviour
             //------------------------------------------------------
             Destroy(gameObject);
         }
-    }
-
-    private void OnBecameInvisible()
-    {
-        //------------------------------------------------------
-        //Aufräumen
-        //------------------------------------------------------
-        Destroy(gameObject);
-    }
+    }    
 }
