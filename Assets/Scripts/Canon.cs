@@ -15,14 +15,21 @@ class Canon : MonoBehaviour
     //------------------------------------------------------
     //"Stärke" des Schusses
     //------------------------------------------------------
-    public int m_Power = 3;
+    public int m_Power = 5;
+    //------------------------------------------------------
+    //Anzahl Schüsse
+    //------------------------------------------------------
+    public int m_RemainingShots = 1;
 
-    private void OnCollisionEnter(Collision pi_Collision)
+    /// <summary>
+    /// Feuert Kanone ab
+    /// </summary>
+   public void Shoot()
     {
         //------------------------------------------------------
-        //Wenn ein Dominostein mit der Kanone kollidiert
+        //Falls die Kanone noch Schüsse hat
         //------------------------------------------------------
-        if (pi_Collision.transform.tag == "Dominos")
+        if (m_RemainingShots > 0)
         {
             //------------------------------------------------------
             //Erstelle ein Projektil
@@ -32,6 +39,10 @@ class Canon : MonoBehaviour
             //Feuere es ab
             //------------------------------------------------------
             l_Ball.transform.GetComponent<Rigidbody>().AddForce(transform.forward * m_Power, ForceMode.Impulse);
+            //------------------------------------------------------
+            //Reduziere Anzahl der Schüsse
+            //------------------------------------------------------
+            m_RemainingShots--;
         }
     }    
 }

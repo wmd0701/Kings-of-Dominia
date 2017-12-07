@@ -1,38 +1,187 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
-public class Level : MonoBehaviour, IPointerDownHandler {
+public class Level : MonoBehaviour
+{
     //------------------------------------------------------
-    //Zugriffspunkt aufs Prefab, ändert sich zukünftig
+    //Zugriffspunkt aufs Prefab (ändert sich in der Zukunft)
     //------------------------------------------------------
     [SerializeField]
     private GameObject m_DominoPrefab;
-    
-    /// <summary>
-    /// Bei Input
-    /// </summary>    
-    public void OnPointerDown(PointerEventData pi_Ped)
+    //------------------------------------------------------
+    //LineRenderer für Spawnlinie
+    //------------------------------------------------------
+    private LineRenderer m_Spawner;
+    //------------------------------------------------------
+    //Distanz zwischen Touches und Dominos
+    //------------------------------------------------------
+    private float m_TouchDistance = 0.03f;
+    private float m_SpawnDistance = 0.05f;
+
+    private void Start()
     {
         //------------------------------------------------------
-        //Wenn nur ein Touch
+        //Hole LineRenderer
+        //------------------------------------------------------
+        m_Spawner = gameObject.GetComponent<LineRenderer>();
+    }
+
+    private void Update()
+    {
+        //------------------------------------------------------
+        //Falls es nur einen Touch gab
         //------------------------------------------------------
         if (Input.touchCount == 1)
         {
-            RaycastHit l_Hit;
             //------------------------------------------------------
-            //Erstelle Ray durch die Kamera basierend auf dem Touch
+            //Und dieser nicht gecancelt wurde
             //------------------------------------------------------
-            Ray l_Ray = Camera.main.ScreenPointToRay(pi_Ped.position);            
+            if (Input.GetTouch(0).phase != TouchPhase.Canceled)
+            {
+                RaycastHit l_Hit;
+                //------------------------------------------------------
+                //Erstelle Ray durch die Kamera basierend auf dem Touch
+                //------------------------------------------------------
+                Ray l_Ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                //------------------------------------------------------
+                //Führe Raycast durch
+                //------------------------------------------------------
+                if(Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
+                {
+                    //------------------------------------------------------
+                    //Wende entweder Force auf Rigidbody des Hits an..
+                    //------------------------------------------------------
+                    l_Hit.transform.GetComponent<Rigidbody>().AddForceAtPosition(l_Ray.direction, l_Hit.point, ForceMode.Impulse);
+                }
+                else if (Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
+                {
+                    //------------------------------------------------------
+                    //..Oder speichere Punkt im Spawnarray
+                    //------------------------------------------------------
+                    m_Spawner.positionCount++;
+                    m_Spawner.SetPosition(m_Spawner.positionCount-1, l_Hit.point);                    
+                }
+            }
             //------------------------------------------------------
-            //Führe Raycast durch
+            //Wenn der Touch beendet wurde
             //------------------------------------------------------
-            if (Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
+            if (Input.GetTouch(0).phase == TouchPhase.Ended)
             {
                 //------------------------------------------------------
-                //Erstelle ggf. Dominostein
+                //Spawne Dominos und setzte Spawner zurück
                 //------------------------------------------------------
-                Instantiate(m_DominoPrefab, l_Hit.point,  Quaternion.Euler(-90, Quaternion.LookRotation(l_Ray.direction).eulerAngles.y, 0));
-            }            
+                Vector3[] l_Positions = new Vector3[m_Spawner.positionCount];
+                m_Spawner.GetPositions(l_Positions);
+                SpawnDominos(l_Positions);
+                m_Spawner.positionCount = 0;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Spawne Dominos basierend auf Koordinaten
+    /// </summary>
+    /// <param name="pi_Positions">Koordinatenarray</param>
+    private void SpawnDominos(Vector3 [] pi_Positions)
+    {
+        //------------------------------------------------------
+        //Erstelle Listen für plausible Positionen..
+        //------------------------------------------------------
+        List<Vector3> l_WorkingPositions = new List<Vector3>();
+        //------------------------------------------------------
+        //..Und deren Rotationen
+        //------------------------------------------------------
+        List<Quaternion> l_InterpolatedRotations = new List<Quaternion>();
+        //------------------------------------------------------
+        //Falls es mindestens zwei Positionen gibt..
+        //------------------------------------------------------
+        if (pi_Positions.Length > 1)
+        {
+            //------------------------------------------------------
+            //Gehe durch die Positionen
+            //------------------------------------------------------
+            for (int i = 0; i < pi_Positions.Length - 1; i++)
+            {
+                //------------------------------------------------------
+                //Und durch die Punkte ab dem aktuellen Punkt
+                //------------------------------------------------------
+                for (int j = i + 1; j < pi_Positions.Length - 1; j++)
+                {
+                    //------------------------------------------------------
+                    //Wenn die Distanz stimmt
+                    //------------------------------------------------------
+                    if ((pi_Positions[j] - pi_Positions[i]).magnitude > m_TouchDistance)
+                    {
+                        //----------------------------------------------------------
+                        //Füge in die Liste ein und ändere Zähler, verlasse Schleife
+                        //----------------------------------------------------------
+                        l_WorkingPositions.Add(pi_Positions[i]);
+                        i = j;
+                        break;
+                    }
+                }
+            }
+            //------------------------------------------------------
+            //Liste mit interpolierten Zwischenpunkten
+            //------------------------------------------------------
+            List<Vector3> l_InterpolatedPositions = new List<Vector3>();
+            //------------------------------------------------------
+            //Gehe durch die Liste der echten Punkte
+            //------------------------------------------------------
+            for (int i = 0; i < l_WorkingPositions.Count - 1; i++)
+            {
+                //------------------------------------------------------
+                //Bestimme Distanz
+                //------------------------------------------------------
+                Vector3 l_Diff = l_WorkingPositions[i + 1] - l_WorkingPositions[i];
+                //---------------------------------------------------------------------------------------
+                //Erstelle Zwischenpunkte basierend auf der gewünschten Spawndistanz zwischen den Steinen
+                //---------------------------------------------------------------------------------------
+                for (int j = 0; j < (l_Diff.magnitude / m_SpawnDistance) - 1; j++)
+                {
+                    l_InterpolatedPositions.Add(l_WorkingPositions[i] + ((l_Diff / (l_Diff.magnitude / m_SpawnDistance)) * j));
+                }
+            }
+            //---------------------------------------------------------
+            //Wenn es mindestens eine Position gibt bestimme Rotationen
+            //---------------------------------------------------------
+            if (l_InterpolatedPositions.Count > 1)
+            {
+                //----------------------------------------------------------
+                //Bestimme Rotation des ersten Steins (abhängig vom Zweiten)
+                //----------------------------------------------------------
+                l_InterpolatedRotations.Add(Quaternion.Euler(-90, (Mathf.Atan2((l_InterpolatedPositions[0] - l_InterpolatedPositions[1]).x,
+                                                                               (l_InterpolatedPositions[0] - l_InterpolatedPositions[1]).z) * 180 / Mathf.PI), 0));
+                //------------------------------------------------------
+                //Falls es mindestens drei Steine gibt
+                //------------------------------------------------------
+                if (l_InterpolatedPositions.Count > 2)
+                {
+                    //--------------------------------------------------------
+                    //Bestimme Rotation basierend auf Vorgänger und Nachfolger
+                    //--------------------------------------------------------
+                    for (int i = 1; i < l_InterpolatedPositions.Count - 1; i++)
+                    {
+                        //------------------------------------------------------
+                        //Und füge entsprechend ein
+                        //------------------------------------------------------
+                        l_InterpolatedRotations.Add(Quaternion.Euler(-90, (Mathf.Atan2((l_InterpolatedPositions[i - 1] - l_InterpolatedPositions[i + 1]).x,
+                                                                                       (l_InterpolatedPositions[i - 1] - l_InterpolatedPositions[i + 1]).z) * 180 / Mathf.PI), 0));
+                    }
+                }
+                //----------------------------------------------------------------
+                //Bestimme Rotation des letzten Steins basierend auf dem Vorgänger
+                //----------------------------------------------------------------
+                l_InterpolatedRotations.Add(Quaternion.Euler(-90, (Mathf.Atan2((l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).x,
+                                                                               (l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).z) * 180 / Mathf.PI), 0));
+                //-----------------------------------------------------------
+                //Spawne Steine mit entsprechenden Koordinaten und Rotationen
+                //-----------------------------------------------------------
+                for (int i = 0; i < l_InterpolatedPositions.Count; i++)
+                {
+                    Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
+                }
+            }
         }
     }
 }

@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 135056487624663014}
   - component: {fileID: 23519207668705678}
   - component: {fileID: 54523230948179680}
-  - component: {fileID: 114064253460754816}
   m_Layer: 2
   m_Name: Canonball
   m_TagString: Untagged
@@ -100,17 +99,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &114064253460754816
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1199719704537732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2353ad62d20550446ae0e9f87d5ce49f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &135056487624663014
 SphereCollider:
   m_ObjectHideFlags: 1

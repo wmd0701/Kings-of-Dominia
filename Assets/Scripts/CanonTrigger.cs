@@ -1,19 +1,18 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
-class CanonBall : MonoBehaviour
+public class CanonTrigger : MonoBehaviour
 {
     private void OnCollisionEnter(Collision pi_Collision)
     {
         //------------------------------------------------------
-        //Wenn ein Projektil mit einem Domino kollidiert
+        //Wenn ein Domino den Trigger berührt hat
         //------------------------------------------------------
         if (pi_Collision.transform.tag == "Dominos")
         {
             //------------------------------------------------------
-            //Lösche es
+            //Feuere die Kanone ab
             //------------------------------------------------------
-            Destroy(gameObject);
+            gameObject.GetComponentInParent<Canon>().Shoot();
         }
-    }    
+    }
 }

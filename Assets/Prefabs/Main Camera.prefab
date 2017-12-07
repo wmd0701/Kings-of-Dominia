@@ -116,7 +116,7 @@ MonoBehaviour:
   m_PerspectiveZoomSpeed: 0.1
   m_OrthographicZoomSpeed: 0.1
   m_RotationSpeed: 1
-  m_MoveSpeed: 0.1
+  m_MoveSpeed: 0.3
   m_RotatePoint: {x: 0, y: 0, z: 0}
 --- !u!114 &114781053935649996
 MonoBehaviour:

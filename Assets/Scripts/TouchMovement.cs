@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class TouchMovement : MonoBehaviour {
+public class TouchMovement : MonoBehaviour
+{
     //------------------------------------------------------
     //Geschwindigkeiten für Perspektivisch/Orthografisch
     //------------------------------------------------------
@@ -14,9 +15,9 @@ public class TouchMovement : MonoBehaviour {
     //------------------------------------------------------
     //Kartenmittelpunkt
     //------------------------------------------------------
-    public Vector3 m_RotatePoint = new Vector3(0,0,0);    
+    public Vector3 m_RotatePoint = new Vector3(0, 0, 0);
 
-	void Update () {
+    private void Update () {
         //------------------------------------------------------
         //Wenn es genau zwei Touches gab
         //------------------------------------------------------
@@ -41,6 +42,20 @@ public class TouchMovement : MonoBehaviour {
             //Bestimme Delta zwischen den Touches
             //------------------------------------------------------
             float l_DeltaMagDiff = l_PrevTouchMag - l_CurrTouchMag;
+            //------------------------------------------------------
+            //Wenn nicht auf einem Punkt gehalten wird
+            //------------------------------------------------------
+            if (l_TouchZero.phase != TouchPhase.Stationary && l_TouchOne.phase != TouchPhase.Stationary)
+            {
+                Vector3 l_CurrTouchAvg = (l_TouchOne.position + l_TouchZero.position) / 2;
+                Vector3 l_PrevTouchAvg = (l_PrevTouchOne + l_PrevTouchZero) / 2;
+                //------------------------------------------------------
+                //Bewege Kamera entsprechend
+                //------------------------------------------------------
+                Camera.main.transform.Translate(new Vector3((l_PrevTouchAvg.x - l_CurrTouchAvg.x) * Time.deltaTime * m_MoveSpeed,
+                                                            (l_PrevTouchAvg.y - l_CurrTouchAvg.y) * Time.deltaTime * m_MoveSpeed,
+                                                            (l_PrevTouchAvg.y - l_CurrTouchAvg.y) * Time.deltaTime * m_MoveSpeed));
+            }
             //------------------------------------------------------
             //Bestimme Delta-Winkel
             //------------------------------------------------------
@@ -70,26 +85,6 @@ public class TouchMovement : MonoBehaviour {
                 //------------------------------------------------------
                 Camera.main.fieldOfView += l_DeltaMagDiff * m_PerspectiveZoomSpeed;
                 Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 5f, 25f);
-            }
-        }
-        else if(Input.touchCount == 1)
-        {
-            //------------------------------------------------------
-            //Hole Touch
-            //------------------------------------------------------
-            Touch l_TouchZero = Input.GetTouch(0);
-            Vector2 l_PrevTouch = l_TouchZero.position - l_TouchZero.deltaPosition;
-            //------------------------------------------------------
-            //Wenn nicht auf einem Punkt gehalten wird
-            //------------------------------------------------------
-            if (l_TouchZero.phase != TouchPhase.Stationary)
-            {
-                //------------------------------------------------------
-                //Bewege Kamera entsprechend
-                //------------------------------------------------------
-                Camera.main.transform.Translate(new Vector3((l_PrevTouch.x - l_TouchZero.position.x) * Time.deltaTime * m_MoveSpeed,
-                                                            (l_PrevTouch.y - l_TouchZero.position.y) * Time.deltaTime * m_MoveSpeed,
-                                                            (l_PrevTouch.y - l_TouchZero.position.y) * Time.deltaTime * m_MoveSpeed));
             }
         }
     }
