@@ -1,11 +1,14 @@
 fileFormatVersion: 2
 guid: 2e0fa2e232ba4d94e8bb9a5a66a525e3
-timeCreated: 1512406600
+timeCreated: 1513187079
 licenseType: Free
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - m_DominoPrefab: {fileID: 1729889450283248, guid: 0e6173b376c035e4ba0c060d0a2945d0,
+      type: 2}
+  - m_Spawner: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -2,6 +2,7 @@
 
 class Canon : MonoBehaviour
 {
+    [Header("Objects")]
     //------------------------------------------------------
     //Prefab für Projektil
     //------------------------------------------------------
@@ -12,14 +13,17 @@ class Canon : MonoBehaviour
     //------------------------------------------------------
     [SerializeField]
     private Transform m_CanonSpawn;
+    [Header("Settings")]
     //------------------------------------------------------
     //"Stärke" des Schusses
     //------------------------------------------------------
-    public int m_Power = 5;
+    [SerializeField]
+    private int m_Power = 5;
     //------------------------------------------------------
     //Anzahl Schüsse
     //------------------------------------------------------
-    public int m_RemainingShots = 1;
+    [SerializeField]
+    private int m_RemainingShots = 1;
 
     /// <summary>
     /// Feuert Kanone ab

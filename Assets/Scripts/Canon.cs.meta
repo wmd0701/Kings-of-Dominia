@@ -1,11 +1,14 @@
 fileFormatVersion: 2
 guid: e325c31612e93ee41bcd0b6442cd9c85
-timeCreated: 1512424975
+timeCreated: 1513187100
 licenseType: Free
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - m_Canonball: {fileID: 1199719704537732, guid: 9f8f5f39182ae1e4a917b461ae98089a,
+      type: 2}
+  - m_CanonSpawn: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

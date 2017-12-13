@@ -1,31 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Level : MonoBehaviour
+public class DominoSpawner : MonoBehaviour
 {
+    [Header("Objects")]
     //------------------------------------------------------
-    //Zugriffspunkt aufs Prefab (ändert sich in der Zukunft)
+    //Domino Prefab
     //------------------------------------------------------
     [SerializeField]
     private GameObject m_DominoPrefab;
     //------------------------------------------------------
     //LineRenderer für Spawnlinie
     //------------------------------------------------------
+    [SerializeField]
     private LineRenderer m_Spawner;
+    [Header("Settings")]
     //------------------------------------------------------
     //Distanz zwischen Touches und Dominos
     //------------------------------------------------------
-    private float m_TouchDistance = 0.03f;
-    private float m_SpawnDistance = 0.05f;
-
-    private void Start()
-    {
-        //------------------------------------------------------
-        //Hole LineRenderer
-        //------------------------------------------------------
-        m_Spawner = gameObject.GetComponent<LineRenderer>();
-    }
-
+    [SerializeField]
+    private float m_DominoDistance = 0.01f;
+    
     private void Update()
     {
         //------------------------------------------------------
@@ -110,7 +105,7 @@ public class Level : MonoBehaviour
                     //------------------------------------------------------
                     //Wenn die Distanz stimmt
                     //------------------------------------------------------
-                    if ((pi_Positions[j] - pi_Positions[i]).magnitude > m_TouchDistance)
+                    if ((pi_Positions[j] - pi_Positions[i]).magnitude > m_DominoDistance)
                     {
                         //----------------------------------------------------------
                         //Füge in die Liste ein und ändere Zähler, verlasse Schleife
@@ -137,9 +132,9 @@ public class Level : MonoBehaviour
                 //---------------------------------------------------------------------------------------
                 //Erstelle Zwischenpunkte basierend auf der gewünschten Spawndistanz zwischen den Steinen
                 //---------------------------------------------------------------------------------------
-                for (int j = 0; j < (l_Diff.magnitude / m_SpawnDistance) - 1; j++)
+                for (int j = 0; j < (l_Diff.magnitude / m_DominoDistance) - 1; j++)
                 {
-                    l_InterpolatedPositions.Add(l_WorkingPositions[i] + ((l_Diff / (l_Diff.magnitude / m_SpawnDistance)) * j));
+                    l_InterpolatedPositions.Add(l_WorkingPositions[i] + ((l_Diff / (l_Diff.magnitude / m_DominoDistance)) * j));
                 }
             }
             //---------------------------------------------------------
@@ -150,8 +145,8 @@ public class Level : MonoBehaviour
                 //----------------------------------------------------------
                 //Bestimme Rotation des ersten Steins (abhängig vom Zweiten)
                 //----------------------------------------------------------
-                l_InterpolatedRotations.Add(Quaternion.Euler(-90, (Mathf.Atan2((l_InterpolatedPositions[0] - l_InterpolatedPositions[1]).x,
-                                                                               (l_InterpolatedPositions[0] - l_InterpolatedPositions[1]).z) * 180 / Mathf.PI), 0));
+                l_InterpolatedRotations.Add(Quaternion.Euler(-90.0f, (Mathf.Atan2((l_InterpolatedPositions[0] - l_InterpolatedPositions[1]).x,
+                                                                                  (l_InterpolatedPositions[0] - l_InterpolatedPositions[1]).z) * 180 / Mathf.PI), 0.0f));
                 //------------------------------------------------------
                 //Falls es mindestens drei Steine gibt
                 //------------------------------------------------------
@@ -165,15 +160,15 @@ public class Level : MonoBehaviour
                         //------------------------------------------------------
                         //Und füge entsprechend ein
                         //------------------------------------------------------
-                        l_InterpolatedRotations.Add(Quaternion.Euler(-90, (Mathf.Atan2((l_InterpolatedPositions[i - 1] - l_InterpolatedPositions[i + 1]).x,
-                                                                                       (l_InterpolatedPositions[i - 1] - l_InterpolatedPositions[i + 1]).z) * 180 / Mathf.PI), 0));
+                        l_InterpolatedRotations.Add(Quaternion.Euler(-90.0f, (Mathf.Atan2((l_InterpolatedPositions[i - 1] - l_InterpolatedPositions[i + 1]).x,
+                                                                                          (l_InterpolatedPositions[i - 1] - l_InterpolatedPositions[i + 1]).z) * 180 / Mathf.PI), 0.0f));
                     }
                 }
                 //----------------------------------------------------------------
                 //Bestimme Rotation des letzten Steins basierend auf dem Vorgänger
                 //----------------------------------------------------------------
-                l_InterpolatedRotations.Add(Quaternion.Euler(-90, (Mathf.Atan2((l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).x,
-                                                                               (l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).z) * 180 / Mathf.PI), 0));
+                l_InterpolatedRotations.Add(Quaternion.Euler(-90.0f, (Mathf.Atan2((l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).x,
+                                                                                  (l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).z) * 180 / Mathf.PI), 0.0f));
                 //-----------------------------------------------------------
                 //Spawne Steine mit entsprechenden Koordinaten und Rotationen
                 //-----------------------------------------------------------

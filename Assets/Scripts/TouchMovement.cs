@@ -2,20 +2,27 @@
 
 public class TouchMovement : MonoBehaviour
 {
+    [Header("FOV")]
     //------------------------------------------------------
     //Geschwindigkeiten für Perspektivisch/Orthografisch
     //------------------------------------------------------
-    public float m_PerspectiveZoomSpeed = .1f;
-    public float m_OrthographicZoomSpeed = .1f;
+    [SerializeField]
+    private float m_ZoomSpeed = .1f;
+    [SerializeField]
+    private float m_MinFOV = 5f;
+    [SerializeField]
+    private float m_MaxFOV = 25f;
+    [Header("Other")]
     //------------------------------------------------------
     //Kamerabewegungsgeschwindigkeiten
-    //------------------------------------------------------
-    public float m_RotationSpeed = 1f;
-    public float m_MoveSpeed = .1f;
+    //------------------------------------------------------    
+    [SerializeField]
+    private float m_MoveSpeed = .1f;    
     //------------------------------------------------------
     //Kartenmittelpunkt
     //------------------------------------------------------
-    public Vector3 m_RotatePoint = new Vector3(0, 0, 0);
+    [SerializeField]
+    private Vector3 m_RotatePoint = new Vector3(0, 0, 0);
 
     private void Update () {
         //------------------------------------------------------
@@ -66,26 +73,12 @@ public class TouchMovement : MonoBehaviour
             //------------------------------------------------------
             //Rotiere Kamera um den Kartenmittelpunkt
             //------------------------------------------------------
-            Camera.main.transform.RotateAround(m_RotatePoint, new Vector3(0, 1, 0), l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle);
+            Camera.main.transform.RotateAround(m_RotatePoint, Vector3.up, l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle);            
             //------------------------------------------------------
-            //Je nach Kameraeinstellung..
+            //FOV anpassen (darf Limit nicht unterschreiten)
             //------------------------------------------------------
-            if (Camera.main.orthographic)
-            {
-                //------------------------------------------------------
-                //Größe anpassen (darf Limit nicht unterschreiten)
-                //------------------------------------------------------
-                Camera.main.orthographicSize += l_DeltaMagDiff * m_OrthographicZoomSpeed;
-                Camera.main.orthographicSize = Mathf.Max(Mathf.Min(Camera.main.orthographicSize, 1f), .1f);
-            }
-            else
-            {
-                //------------------------------------------------------
-                //FOV anpassen (darf Limit nicht unterschreiten)
-                //------------------------------------------------------
-                Camera.main.fieldOfView += l_DeltaMagDiff * m_PerspectiveZoomSpeed;
-                Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 5f, 25f);
-            }
+            Camera.main.fieldOfView += l_DeltaMagDiff * m_ZoomSpeed;
+            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, m_MinFOV, m_MaxFOV);            
         }
     }
 }
