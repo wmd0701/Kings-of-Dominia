@@ -23,7 +23,7 @@ public class TouchMovement : MonoBehaviour
     //------------------------------------------------------
     [SerializeField]
     private Vector3 m_RotatePoint = new Vector3(0, 0, 0);
-
+    
     private void Update () {
         //------------------------------------------------------
         //Wenn es genau zwei Touches gab
@@ -73,12 +73,15 @@ public class TouchMovement : MonoBehaviour
             //------------------------------------------------------
             //Rotiere Kamera um den Kartenmittelpunkt
             //------------------------------------------------------
-            Camera.main.transform.RotateAround(m_RotatePoint, Vector3.up, l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle);            
+            // Camera.main.transform.RotateAround(m_RotatePoint, Vector3.up, l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle);
             //------------------------------------------------------
             //FOV anpassen (darf Limit nicht unterschreiten)
             //------------------------------------------------------
-            Camera.main.fieldOfView += l_DeltaMagDiff * m_ZoomSpeed;
-            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, m_MinFOV, m_MaxFOV);            
+            
+            Camera.main.transform.Translate(Camera.main.transform.forward * l_DeltaMagDiff * 100 * Time.deltaTime, Space.World);
+
+            // Camera.main.fieldOfView += l_DeltaMagDiff * m_ZoomSpeed;
+            // Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, m_MinFOV, m_MaxFOV);            
         }
     }
 }
