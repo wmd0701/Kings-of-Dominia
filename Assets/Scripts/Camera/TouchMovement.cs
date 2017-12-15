@@ -2,22 +2,23 @@
 
 public class TouchMovement : MonoBehaviour
 {
-    [Header("FOV")]
+    [Header("Settings")]
     //------------------------------------------------------
     //Geschwindigkeiten für Perspektivisch/Orthografisch
     //------------------------------------------------------
     [SerializeField]
-    private float m_ZoomSpeed = .1f;
+    private float m_ZoomSpeed = 50f;
+
     [SerializeField]
-    private float m_MinFOV = 5f;
+    private float m_ZoomMin = 0f;
+
     [SerializeField]
-    private float m_MaxFOV = 25f;
-    [Header("Other")]
+    private float m_ZoomMax = 250f;
     //------------------------------------------------------
     //Kamerabewegungsgeschwindigkeiten
     //------------------------------------------------------    
     [SerializeField]
-    private float m_MoveSpeed = .1f;    
+    private float m_MoveSpeed = 10f;    
     //------------------------------------------------------
     //Kartenmittelpunkt
     //------------------------------------------------------
@@ -73,12 +74,17 @@ public class TouchMovement : MonoBehaviour
             //------------------------------------------------------
             //Rotiere Kamera um den Kartenmittelpunkt
             //------------------------------------------------------
-            Camera.main.transform.RotateAround(m_RotatePoint, Vector3.up, l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle);            
+            Camera.main.transform.RotateAround(m_RotatePoint, Vector3.up, l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle);
             //------------------------------------------------------
-            //FOV anpassen (darf Limit nicht unterschreiten)
+            //Abstand ändern..
             //------------------------------------------------------
-            Camera.main.fieldOfView += l_DeltaMagDiff * m_ZoomSpeed;
-            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, m_MinFOV, m_MaxFOV);            
+            Vector3 l_NewPos = Camera.main.transform.position + 
+                Camera.main.transform.forward * -1 * l_DeltaMagDiff * m_ZoomSpeed * Time.deltaTime;
+            //------------------------------------------------------
+            //..Falls möglich
+            //------------------------------------------------------
+            if (l_NewPos.y <= m_ZoomMax && l_NewPos.y >= m_ZoomMin)
+                Camera.main.transform.position = l_NewPos;
         }
     }
 }

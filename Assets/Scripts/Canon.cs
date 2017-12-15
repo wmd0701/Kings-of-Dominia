@@ -44,6 +44,10 @@ class Canon : MonoBehaviour
             //------------------------------------------------------
             l_Ball.transform.GetComponent<Rigidbody>().AddForce(transform.forward * m_Power, ForceMode.Impulse);
             //------------------------------------------------------
+            //Registriere den RB des Schusses
+            //------------------------------------------------------
+            FreezeManager.Instance.RegisterRB(l_Ball.GetComponent<Rigidbody>());
+            //------------------------------------------------------
             //Reduziere Anzahl der Schüsse
             //------------------------------------------------------
             m_RemainingShots--;
