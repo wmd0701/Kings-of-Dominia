@@ -11,8 +11,7 @@ public class DominoSpawner : MonoBehaviour
     private GameObject m_DominoPrefab;
     //------------------------------------------------------
     //LineRenderer für Spawnlinie
-    //------------------------------------------------------
-    [SerializeField]
+    //------------------------------------------------------    
     private LineRenderer m_Spawner;
     [Header("Settings")]
     //------------------------------------------------------
@@ -20,7 +19,15 @@ public class DominoSpawner : MonoBehaviour
     //------------------------------------------------------
     [SerializeField]
     private float m_DominoDistance = 0.01f;
-    
+
+    private void Start()
+    {
+        //------------------------------------------------------
+        //Hole Renderer
+        //------------------------------------------------------
+        m_Spawner = gameObject.GetComponent<LineRenderer>();
+    }
+
     private void Update()
     {
         //------------------------------------------------------
