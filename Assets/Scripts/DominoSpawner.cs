@@ -19,6 +19,8 @@ public class DominoSpawner : MonoBehaviour
     //------------------------------------------------------
     [SerializeField]
     private float m_DominoDistance = 0.01f;
+    [SerializeField]
+    private float m_EpsilonSpawnHeight = 0.01f;
 
     private void Start()
     {
@@ -60,8 +62,21 @@ public class DominoSpawner : MonoBehaviour
                     //------------------------------------------------------
                     //..Oder speichere Punkt im Spawnarray
                     //------------------------------------------------------
-                    m_Spawner.positionCount++;
-                    m_Spawner.SetPosition(m_Spawner.positionCount-1, l_Hit.point);                    
+                    if(Mathf.Abs(l_Hit.point.y) < m_EpsilonSpawnHeight)
+                    {
+                        m_Spawner.positionCount++;
+                        m_Spawner.SetPosition(m_Spawner.positionCount-1, l_Hit.point);
+                    }
+                    else
+                    {
+                        //------------------------------------------------------
+                        //Spawne Dominos und setzte Spawner zurück
+                        //------------------------------------------------------
+                        Vector3[] l_Positions = new Vector3[m_Spawner.positionCount];
+                        m_Spawner.GetPositions(l_Positions);
+                        SpawnDominos(l_Positions);
+                        m_Spawner.positionCount = 0;
+                    }
                 }
             }
             //------------------------------------------------------
