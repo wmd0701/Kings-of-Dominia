@@ -54,8 +54,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DominoPrefab: {fileID: 1729889450283248, guid: 0e6173b376c035e4ba0c060d0a2945d0,
     type: 2}
-  m_Spawner: {fileID: 120962958477384440}
   m_DominoDistance: 1
+  m_EpsilonSpawnHeight: 0.01
 --- !u!120 &120962958477384440
 LineRenderer:
   m_ObjectHideFlags: 1
@@ -70,7 +70,7 @@ LineRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: 368e5bc7bd46bd344920434af0dae4c7, type: 2}
+  - {fileID: 2100000, guid: 5b3952471ddd75f4996d0f3191037435, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
