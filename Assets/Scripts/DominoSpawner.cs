@@ -19,32 +19,8 @@ public class DominoSpawner : MonoBehaviour
     //------------------------------------------------------
     [SerializeField]
     private float m_DominoDistance = 0.01f;
-    //------------------------------------------------------
-    //Distanz +/- ab Null wo gespawnt werden darf/kann
-    //------------------------------------------------------
     [SerializeField]
     private float m_EpsilonSpawnHeight = 0.01f;
-    //------------------------------------------------------
-    //Editormodus
-    //------------------------------------------------------
-    private bool m_EditMode;
-
-    /// <summary>
-    /// Switcht Editormodus
-    /// </summary>
-    public bool EditMode {
-        private get
-        {
-            return m_EditMode;
-        }
-        set {
-            m_EditMode = !m_EditMode;
-            //-----------------------------------------------------------------
-            //Friere RBs ein / Taue RBs auf
-            //-----------------------------------------------------------------
-            FreezeManager.Instance.RBsActive= !m_EditMode;
-        }
-    }
 
     private void Start()
     {
@@ -71,18 +47,17 @@ public class DominoSpawner : MonoBehaviour
                 //Erstelle Ray durch die Kamera basierend auf dem Touch
                 //------------------------------------------------------
                 Ray l_Ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-
                 //------------------------------------------------------
                 //Führe Raycast durch
                 //------------------------------------------------------
-                if(!EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
+                if(Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
                     //Wende entweder Force auf Rigidbody des Hits an..
                     //------------------------------------------------------
                     l_Hit.transform.GetComponent<Rigidbody>().AddForceAtPosition(l_Ray.direction, l_Hit.point, ForceMode.Impulse);
                 }
-                if (EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
+                else if (Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
                 {
                     //------------------------------------------------------
                     //..Oder speichere Punkt im Spawnarray
@@ -118,8 +93,8 @@ public class DominoSpawner : MonoBehaviour
                 m_Spawner.positionCount = 0;
             }
         }
-    }    
-
+    }
+    
     /// <summary>
     /// Spawne Dominos basierend auf Koordinaten
     /// </summary>
@@ -221,11 +196,7 @@ public class DominoSpawner : MonoBehaviour
                 //-----------------------------------------------------------
                 for (int i = 0; i < l_InterpolatedPositions.Count; i++)
                 {
-                    //-----------------------------------------------------------------
-                    //Füge RB zum Manager hinzu
-                    //-----------------------------------------------------------------
-                    Rigidbody m_NewRB = Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]).GetComponent<Rigidbody>();
-                    FreezeManager.Instance.RegisterRB(m_NewRB);
+                    Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
                 }
             }
         }
