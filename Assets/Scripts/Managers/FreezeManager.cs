@@ -61,12 +61,17 @@ public class FreezeManager : MonoBehaviour {
     public void RegisterRB(Rigidbody pi_RB)
     {
         //-----------------------------------------------------------------
-        //Deaktiviere ggfs. direkt
+        //Speichere ggf. Geschwindigkeit
+        //-----------------------------------------------------------------
+        if (pi_RB.velocity.magnitude > 0)
+            m_Velocities.Add(pi_RB, pi_RB.velocity);
+        //-----------------------------------------------------------------
+        //Friere ggf. direkt ein
         //-----------------------------------------------------------------
         if (!RBsActive)        
             pi_RB.constraints = RigidbodyConstraints.FreezeAll;
         //-----------------------------------------------------------------
-        //Adde
+        //Füge hinzu
         //-----------------------------------------------------------------
         m_RBs.Add(pi_RB);
     }
@@ -129,10 +134,8 @@ public class FreezeManager : MonoBehaviour {
                     //-----------------------------------------------------------------
                     //Speichere ggf.  Geschwindigkeit
                     //-----------------------------------------------------------------
-                    if (b_RB.velocity.magnitude > 0)
-                    {
-                        m_Velocities.Add(b_RB, b_RB.velocity);
-                    }
+                    if (b_RB.velocity.magnitude > 0)                    
+                        m_Velocities.Add(b_RB, b_RB.velocity);                    
                     //-----------------------------------------------------------------
                     //Friere ein
                     //-----------------------------------------------------------------

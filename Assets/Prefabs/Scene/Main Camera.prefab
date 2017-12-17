@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EventMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 769
   m_MaxRayIntersections: 0
 --- !u!114 &114267902071041286
 MonoBehaviour:
@@ -113,9 +113,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00813be581e902e4693db2c3b71f6eea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ZoomSpeed: 0.1
-  m_MinFOV: 5
-  m_MaxFOV: 25
+  m_ZoomSpeed: 75
+  m_ZoomMin: 50
+  m_ZoomMax: 175
   m_MoveSpeed: 10
   m_RotatePoint: {x: 0, y: 0, z: 0}
 --- !u!114 &114781053935649996
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EventMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294964169
   m_MaxRayIntersections: 0
 --- !u!124 &124012639108642614
 Behaviour:

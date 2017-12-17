@@ -71,7 +71,6 @@ public class DominoSpawner : MonoBehaviour
                 //Erstelle Ray durch die Kamera basierend auf dem Touch
                 //------------------------------------------------------
                 Ray l_Ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-
                 //------------------------------------------------------
                 //Führe Raycast durch
                 //------------------------------------------------------
