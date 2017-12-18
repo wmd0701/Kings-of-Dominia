@@ -9,6 +9,9 @@ public class DominoSpawner : MonoBehaviour
     //------------------------------------------------------
     [SerializeField]
     private GameObject m_DominoPrefab;
+
+    [SerializeField]
+    private GameObject m_DominoIcePrefab;
     //------------------------------------------------------
     //LineRenderer für Spawnlinie
     //------------------------------------------------------    
@@ -72,25 +75,53 @@ public class DominoSpawner : MonoBehaviour
                 //------------------------------------------------------
                 Ray l_Ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
                 //------------------------------------------------------
-                //Führe Raycast durch
+                //Falls nicht im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
                 if(!EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
-                    //Wende entweder Force auf Rigidbody des Hits an..
+                    //..Wende entweder Force auf Rigidbody des Hits an
                     //------------------------------------------------------
                     l_Hit.transform.GetComponent<Rigidbody>().AddForceAtPosition(l_Ray.direction, l_Hit.point, ForceMode.Impulse);
                 }
+                //------------------------------------------------------
+                //Falls im Editmode und Domino getroffen wurde..
+                //------------------------------------------------------
+                if (EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
+                {
+                    //------------------------------------------------------
+                    //..Speichere Transform
+                    //------------------------------------------------------
+                    Transform l_Replace = l_Hit.transform;
+                    //------------------------------------------------------
+                    //Lösche den Domino
+                    //------------------------------------------------------
+                    Destroy(l_Hit.transform.gameObject);
+                    //------------------------------------------------------
+                    //Erstelle neuen Eisdomino an der gleichen Position
+                    //------------------------------------------------------
+                    GameObject l_NewDomino = Instantiate(m_DominoIcePrefab, l_Replace.position, l_Replace.rotation);
+                    //------------------------------------------------------
+                    //Registriere RB
+                    //------------------------------------------------------
+                    FreezeManager.Instance.RegisterRB(l_NewDomino.GetComponent<Rigidbody>());
+                }
+                //------------------------------------------------------
+                //Falls im Editmode und das Level getroffen wurde..
+                //------------------------------------------------------
                 if (EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
                 {
                     //------------------------------------------------------
-                    //..Oder speichere Punkt im Spawnarray
+                    //..Speichere Hit im Spawnarray falls auf "Nullebene"
                     //------------------------------------------------------
                     if(Mathf.Abs(l_Hit.point.y) < m_EpsilonSpawnHeight)
                     {
                         m_Spawner.positionCount++;
                         m_Spawner.SetPosition(m_Spawner.positionCount-1, l_Hit.point);
                     }
+                    //------------------------------------------------------
+                    //..Oder spawne Dominos
+                    //------------------------------------------------------
                     else
                     {
                         //------------------------------------------------------

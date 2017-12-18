@@ -54,6 +54,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DominoPrefab: {fileID: 1729889450283248, guid: 0e6173b376c035e4ba0c060d0a2945d0,
     type: 2}
+  m_DominoIcePrefab: {fileID: 1142299761358070, guid: 2a02ce0a4f9e9744498a52d3ab34dc3f,
+    type: 2}
   m_DominoDistance: 1
   m_EpsilonSpawnHeight: 0.01
 --- !u!120 &120962958477384440

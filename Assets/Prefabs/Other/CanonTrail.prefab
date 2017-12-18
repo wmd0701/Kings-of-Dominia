@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 54614622404287606}
   - component: {fileID: 114743164063399418}
   - component: {fileID: 135368377540395334}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: CanonTrail
   m_TagString: Canon
   m_Icon: {fileID: 0}
