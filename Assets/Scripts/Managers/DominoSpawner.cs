@@ -1,15 +1,61 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class DominoSpawner : MonoBehaviour
+public class DominoSpawner : MonoBehaviour, UndoChange
 {
+    #region Classes
+    
+    /// <summary>
+    /// Speicher letzten Dominospawn
+    /// </summary>
+    private class DominoChange : Change
+    {
+        /// <summary>
+        /// Get/Set Änderungen
+        /// </summary>
+        public GameObject[] m_LastSpawned { get; private set; }
+
+        /// <summary>
+        /// Wiederherstellmodus
+        /// </summary>
+        public enRestoreMode m_Mode { get; private set; }
+
+        /// <summary>
+        /// Initialisiert neue Änderung
+        /// </summary>
+        /// <param name="pi_LastSpawned">Array mit den Steinen</param>
+        public DominoChange(GameObject[] pi_LastSpawned, enRestoreMode pi_Mode) {
+            m_LastSpawned = pi_LastSpawned;
+            m_Mode = pi_Mode;
+        }
+    }
+
+    #endregion
+
+    #region Enums
+
+    /// <summary>
+    /// Enum für den Undo-Modus
+    /// </summary>
+    private enum enRestoreMode
+    {
+        Destroy = 0,
+        Replace = 1
+    }
+
+    #endregion
+
+    #region Declarations
+
     [Header("Objects")]
     //------------------------------------------------------
     //Domino Prefab
     //------------------------------------------------------
     [SerializeField]
     private GameObject m_DominoPrefab;
-
+    //------------------------------------------------------
+    //Eis-Domino Prefab
+    //------------------------------------------------------
     [SerializeField]
     private GameObject m_DominoIcePrefab;
     //------------------------------------------------------
@@ -28,26 +74,13 @@ public class DominoSpawner : MonoBehaviour
     [SerializeField]
     private float m_EpsilonSpawnHeight = 0.01f;
     //------------------------------------------------------
-    //Editormodus
+    //Für Änderungen rückgängig machen
     //------------------------------------------------------
-    private bool m_EditMode;
+    DominoChange m_LatestChange;
 
-    /// <summary>
-    /// Switcht Editormodus
-    /// </summary>
-    public bool EditMode {
-        private get
-        {
-            return m_EditMode;
-        }
-        set {
-            m_EditMode = !m_EditMode;
-            //-----------------------------------------------------------------
-            //Friere RBs ein / Taue RBs auf
-            //-----------------------------------------------------------------
-            FreezeManager.Instance.RBsActive= !m_EditMode;
-        }
-    }
+    #endregion
+
+    #region Catch Events
 
     private void Start()
     {
@@ -77,7 +110,7 @@ public class DominoSpawner : MonoBehaviour
                 //------------------------------------------------------
                 //Falls nicht im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
-                if(!EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
+                if(!FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
                     //..Wende entweder Force auf Rigidbody des Hits an
@@ -87,7 +120,7 @@ public class DominoSpawner : MonoBehaviour
                 //------------------------------------------------------
                 //Falls im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
-                if (EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
+                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
                     //..Speichere Transform
@@ -105,11 +138,15 @@ public class DominoSpawner : MonoBehaviour
                     //Registriere RB
                     //------------------------------------------------------
                     FreezeManager.Instance.RegisterRB(l_NewDomino.GetComponent<Rigidbody>());
+                    //------------------------------------------------------
+                    //Speichere Veränderung
+                    //------------------------------------------------------
+                    SaveLastChange(new DominoChange(new GameObject[] { l_NewDomino }, enRestoreMode.Replace));
                 }
                 //------------------------------------------------------
                 //Falls im Editmode und das Level getroffen wurde..
                 //------------------------------------------------------
-                if (EditMode && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
+                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
                 {
                     //------------------------------------------------------
                     //..Speichere Hit im Spawnarray falls auf "Nullebene"
@@ -148,7 +185,11 @@ public class DominoSpawner : MonoBehaviour
                 m_Spawner.positionCount = 0;
             }
         }
-    }    
+    }
+
+    #endregion
+
+    #region Procedures
 
     /// <summary>
     /// Spawne Dominos basierend auf Koordinaten
@@ -247,17 +288,86 @@ public class DominoSpawner : MonoBehaviour
                 l_InterpolatedRotations.Add(Quaternion.Euler(-90.0f, (Mathf.Atan2((l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).x,
                                                                                   (l_InterpolatedPositions[l_InterpolatedPositions.Count - 1] - l_InterpolatedPositions[l_InterpolatedPositions.Count - 2]).z) * 180 / Mathf.PI), 0.0f));
                 //-----------------------------------------------------------
+                //Erstelle Array für zu spawnende Steine
+                //-----------------------------------------------------------
+                GameObject[] l_Spawned = new GameObject[l_InterpolatedPositions.Count];
+                //-----------------------------------------------------------
                 //Spawne Steine mit entsprechenden Koordinaten und Rotationen
                 //-----------------------------------------------------------
                 for (int i = 0; i < l_InterpolatedPositions.Count; i++)
                 {
                     //-----------------------------------------------------------------
-                    //Füge RB zum Manager hinzu
+                    //Füge RB zum Manager hinzu und GameObject ins Array
                     //-----------------------------------------------------------------
-                    Rigidbody m_NewRB = Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]).GetComponent<Rigidbody>();
-                    FreezeManager.Instance.RegisterRB(m_NewRB);
+                    l_Spawned[i] = Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
+                    FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());
                 }
+                //-----------------------------------------------------------
+                //Speicher Änderung
+                //-----------------------------------------------------------
+                SaveLastChange(new DominoChange(l_Spawned, enRestoreMode.Destroy));
             }
         }
     }
+
+    /// <summary>
+    /// Speichert Änderung
+    /// </summary>
+    /// <param name="pi_Change">Änderung</param>
+    public void SaveLastChange(Change pi_Change)
+    {
+        m_LatestChange = (DominoChange) pi_Change;
+    }
+
+    /// <summary>
+    /// Lädt Stand vor der Änderung
+    /// </summary>
+    public void RestoreLastSave()
+    {
+        //-----------------------------------------------------------
+        //Geht nur falls es eine Änderung gab bzw. im Edit-Mode
+        //-----------------------------------------------------------
+        if (m_LatestChange == null || !FreezeManager.Instance.Frozen)
+            return;
+        //-----------------------------------------------------------
+        //Gehe durch die Dominos
+        //-----------------------------------------------------------
+        foreach (GameObject b_Domino in m_LatestChange.m_LastSpawned)
+        {
+            //-----------------------------------------------------------
+            //Je nach Modus
+            //-----------------------------------------------------------
+            switch (m_LatestChange.m_Mode)
+            {
+                case enRestoreMode.Destroy:
+                    //-----------------------------------------------------------
+                    //Entferne altes Objekt
+                    //-----------------------------------------------------------
+                    FreezeManager.Instance.RemoveRB(b_Domino.GetComponent<Rigidbody>());
+                    Destroy(b_Domino);
+                    break;
+                case enRestoreMode.Replace:
+                    //-----------------------------------------------------------
+                    //Speichere Transform
+                    //-----------------------------------------------------------
+                    Transform l_OldObject = b_Domino.transform;
+                    //-----------------------------------------------------------
+                    //Entferne altes Objekt
+                    //-----------------------------------------------------------
+                    FreezeManager.Instance.RemoveRB(b_Domino.GetComponent<Rigidbody>());
+                    Destroy(b_Domino);
+                    //-----------------------------------------------------------
+                    //Instantiiere neuen Domino und füge RB zum Manager hinzu
+                    //-----------------------------------------------------------
+                    FreezeManager.Instance.RegisterRB(Instantiate(m_DominoPrefab, l_OldObject.position, l_OldObject.rotation).GetComponent<Rigidbody>());
+                    break;
+            }            
+        }
+        //-----------------------------------------------------------
+        //Entferne Change
+        //-----------------------------------------------------------
+        m_LatestChange = null;
+    }
+
+    #endregion
 }

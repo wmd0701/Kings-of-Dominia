@@ -2,12 +2,10 @@
 using UnityEngine;
 
 public class FreezeManager : MonoBehaviour {
-    //-----------------------------------------------------------------
-    //Singleton
+    #region Declarations
 
-    // also ich finde hierbei vielleicht gibt's andere Methoden um Singleton zu realisieren, z.B. das Singleton
-    // Interfact zu implementieren oder durch set/get Methoden das zu simulieren, aber egal, statische Variable ist
-    // auch gut :)
+    //-----------------------------------------------------------------
+    //Singleton    
     //-----------------------------------------------------------------
     public static FreezeManager Instance = null;
     //-----------------------------------------------------------------
@@ -21,23 +19,31 @@ public class FreezeManager : MonoBehaviour {
     //-----------------------------------------------------------------
     //RBs aktiv oder nicht
     //-----------------------------------------------------------------
-    private bool m_Active;
+    private bool m_Forzen;
+
+    #endregion
+
+    #region Properties
 
     /// <summary>
-    /// RBs aktuell aktiviert oder nicht
+    /// RBs aktuell eingeforen oder nicht
     /// </summary>
-    public bool RBsActive
+    public bool Frozen
     {
         get
         {
-            return m_Active;
+            return m_Forzen;
         }
         set
         {
-            m_Active = value;
+            m_Forzen = !m_Forzen;
             SetRBStatus();
         }
     }
+
+    #endregion
+
+    #region Catch Events
 
     /// <summary>
     /// Wenn das Script aktiviert wird
@@ -58,6 +64,10 @@ public class FreezeManager : MonoBehaviour {
             Destroy(this);
     }
 
+    #endregion
+
+    #region Procedures
+
     /// <summary>
     /// Füge neuen RB hinzu
     /// </summary>
@@ -72,7 +82,7 @@ public class FreezeManager : MonoBehaviour {
         //-----------------------------------------------------------------
         //Friere ggf. direkt ein
         //-----------------------------------------------------------------
-        if (!RBsActive)        
+        if (Frozen)        
             pi_RB.constraints = RigidbodyConstraints.FreezeAll;
         //-----------------------------------------------------------------
         //Füge hinzu
@@ -115,7 +125,7 @@ public class FreezeManager : MonoBehaviour {
                 //-----------------------------------------------------------------
                 //..Falls RBs aktiv..
                 //-----------------------------------------------------------------
-                if (RBsActive)
+                if (!Frozen)
                 {
                     //-----------------------------------------------------------------
                     //Entferne Constraints..
@@ -155,4 +165,6 @@ public class FreezeManager : MonoBehaviour {
             RemoveRB(b_RB);
         }
     }
+
+    #endregion
 }

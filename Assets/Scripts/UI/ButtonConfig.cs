@@ -5,7 +5,15 @@ public class ButtonConfig : MonoBehaviour{
     //------------------------------------------------------
     //Referenz auf das Image
     //------------------------------------------------------
-    private Image m_Text;
+    private Image m_Button;
+    //------------------------------------------------------
+    //Farben für aktiv/nicht aktiv
+    //------------------------------------------------------
+    [Header("Settings")]
+    [SerializeField]
+    private Color m_Active;
+    [SerializeField]
+    private Color m_NotActive;
 
     private void Awake()
     {
@@ -13,8 +21,8 @@ public class ButtonConfig : MonoBehaviour{
         //Setzte Text auf nichts, hole Image
         //------------------------------------------------------
         gameObject.GetComponentInChildren<Text>().text = "";
-        m_Text = gameObject.GetComponent<Image>();
-        m_Text.color = Color.white;
+        m_Button = gameObject.GetComponent<Image>();
+        m_Button.color = m_NotActive;
     }
 
     /// <summary>
@@ -22,13 +30,13 @@ public class ButtonConfig : MonoBehaviour{
     /// </summary>
     public void ChangeColor()
     {
-        if(m_Text.color == Color.white)
+        if(m_Button.color == m_NotActive)
         {
-            m_Text.color = Color.red;
+            m_Button.color = m_Active;
         }
         else
         {
-            m_Text.color = Color.white;
+            m_Button.color = m_NotActive;
         }
     }
 }

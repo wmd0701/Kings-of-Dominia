@@ -2,6 +2,8 @@
 
 public class CameraBehavior : MonoBehaviour
 {
+    #region Declarations
+
     [Header("Settings")]
     //------------------------------------------------------
     //Zoomgeschwindigkeit
@@ -31,6 +33,10 @@ public class CameraBehavior : MonoBehaviour
     private Touch m_TouchZero, m_TouchOne;
     private Vector2 m_PrevTouchZero, m_PrevTouchOne;
 
+    #endregion
+
+    #region Catch Events
+
     private void Update () {
         //------------------------------------------------------
         //Falls es zwei Touches gab
@@ -55,6 +61,10 @@ public class CameraBehavior : MonoBehaviour
             CameraZoom();            
         }
     }
+
+    #endregion
+
+    #region Procedures
 
     /// <summary>
     /// Rotiert Kamera
@@ -118,4 +128,6 @@ public class CameraBehavior : MonoBehaviour
         if (l_NewPos.y <= m_ZoomMax && l_NewPos.y >= m_ZoomMin)
             Camera.main.transform.position = l_NewPos;
     }
+
+    #endregion
 }

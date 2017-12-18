@@ -3,6 +3,8 @@ using UnityEngine.EventSystems;
 
 class Canon : MonoBehaviour, IPointerDownHandler
 {
+    #region Declarations
+
     [Header("Objects")]
     //------------------------------------------------------
     //Prefab für Projektil
@@ -15,10 +17,9 @@ class Canon : MonoBehaviour, IPointerDownHandler
     [SerializeField]
     private Transform m_CanonSpawn;
     //------------------------------------------------------
-    //Trailrenderer Prefab
-    //------------------------------------------------------
-    [SerializeField]
-    private GameObject m_TrailRenderer;
+    //LineRenderer Prefab für Schussanzeige
+    //------------------------------------------------------    
+    private LineRenderer m_ShotRenderer;
     [Header("Settings")]
     //------------------------------------------------------
     //Geschwindigkeit des Schusses
@@ -26,27 +27,140 @@ class Canon : MonoBehaviour, IPointerDownHandler
     [SerializeField]
     private int m_ShotVelocity;
     //------------------------------------------------------
+    //Distanz zwischen einzelnen Renderpunkten
+    //------------------------------------------------------
+    [SerializeField]
+    private float m_ShotRenderResolution;
+    //------------------------------------------------------
     //Anzahl Schüsse
     //------------------------------------------------------
     [SerializeField]
-    private int m_RemainingShots = 1;
+    private int m_ShotCount;
     //------------------------------------------------------
-    //Aktuelle Schussanzeige
+    //Referenz auf Kamerascript
     //------------------------------------------------------
-    private GameObject m_ShowedShot;
+    private CameraBehavior m_CameraBehavior;
+    //------------------------------------------------------
+    //Bool ob Kanone gesteuert wird
+    //------------------------------------------------------
+    bool m_CanonControllable = false;
 
-    //------------------------------------------------------
-    //um die Umwandlung zwischen canon mode und camera mode kontrollieren
-    //------------------------------------------------------
-    CameraBehavior c;
+    #endregion
 
-    [SerializeField]
-    private float CanonMoveSpeed = 5.0f;
+    #region Properties
+
+    /// <summary>
+    /// Wechselt zwischen Kamera/Kanonenkontrolle
+    /// </summary>
+    private bool CanonControl
+    {
+        get
+        {
+            return m_CanonControllable;
+        }
+        set
+        {
+            //-----------------------------------------------------
+            //Schalte Kamera an/aus und gebe/nehme Kanonenkontrolle
+            //-----------------------------------------------------
+            m_CameraBehavior.enabled = !value;
+            m_CanonControllable = value;
+        }
+    }
+
+    #endregion
+
+    #region Catch Events
 
     private void Awake()
     {
-        c = Camera.main.GetComponent<CameraBehavior>();
+        //------------------------------------------------------
+        //Hole Referenz auf das Kamera-Script am Anfang
+        //------------------------------------------------------
+        m_CameraBehavior = Camera.main.GetComponent<CameraBehavior>();
+        //------------------------------------------------------
+        //Hole Referenz auf LineRenderer
+        //------------------------------------------------------
+        m_ShotRenderer = gameObject.GetComponent<LineRenderer>();
     }
+
+    /// <summary>
+    /// Wechsle zwischen Kanonen/Kamerakontrolle
+    /// </summary>
+    public void OnPointerDown(PointerEventData pi_Ped)
+    {
+        //------------------------------------------------------
+        //Wenn im Edit-Mode
+        //------------------------------------------------------
+        if (FreezeManager.Instance.Frozen)
+        {
+            //------------------------------------------------------
+            //Switche Kanonenkontrolle an/aus
+            //------------------------------------------------------
+            CanonControl = !CanonControl;
+        }
+    }    
+
+    private void Update()
+    {
+        //------------------------------------------------------
+        //Schalte Kontrolle ggf. ab (und deaktivere Anzeige)
+        //------------------------------------------------------
+        if (!FreezeManager.Instance.Frozen)
+        {
+            if (CanonControl)
+                CanonControl = !CanonControl;
+            if (m_ShotRenderer.positionCount > 0)
+                m_ShotRenderer.positionCount = 0;
+        }
+        //------------------------------------------------------
+        //Rendere ggf. Schussbahn
+        //------------------------------------------------------
+        else
+        {
+            if (m_ShotRenderer.positionCount == 0)
+                ShowShot();
+        }
+        //-----------------------------------------------------
+        //Return falls nicht kontrolliert wird
+        //------------------------------------------------------
+        if (!CanonControl)
+            return;
+        //-----------------------------------------------------
+        //Ansonsten falls zwei Finger den Bildschirm berühren
+        //-----------------------------------------------------
+        if (Input.touchCount == 2)
+        {
+            Touch m_TouchZero, m_TouchOne;
+            Vector2 m_PrevTouchZero, m_PrevTouchOne;
+            //-----------------------------------------------------
+            //Bestimme Touchpunkte (alte und neue)
+            //-----------------------------------------------------
+            m_TouchZero = Input.GetTouch(0);
+            m_TouchOne = Input.GetTouch(1);
+            m_PrevTouchZero = m_TouchZero.position - m_TouchZero.deltaPosition;
+            m_PrevTouchOne = m_TouchOne.position - m_TouchOne.deltaPosition;
+            //-----------------------------------------------------
+            //Bestimme Delta
+            //-----------------------------------------------------
+            float l_TouchZeroDeltaAngle = Mathf.Atan2((m_TouchZero.position - m_TouchOne.position).y,
+                                                      (m_TouchZero.position - m_TouchOne.position).x) * Mathf.Rad2Deg;
+            float l_TouchOneDeltaAngle = Mathf.Atan2((m_PrevTouchZero - m_PrevTouchOne).y,
+                                                     (m_PrevTouchZero - m_PrevTouchOne).x) * Mathf.Rad2Deg;
+            //-----------------------------------------------------
+            //Rotiere Kanone
+            //-----------------------------------------------------
+            gameObject.transform.Rotate(Vector3.up, l_TouchOneDeltaAngle - l_TouchZeroDeltaAngle);
+            //-----------------------------------------------------
+            //Update Schussanzeige
+            //-----------------------------------------------------
+            ShowShot();
+        }
+    }
+
+    #endregion
+
+    #region Procedures
 
     /// <summary>
     /// Feuert Kanone ab
@@ -56,7 +170,7 @@ class Canon : MonoBehaviour, IPointerDownHandler
         //------------------------------------------------------
         //Falls die Kanone noch Schüsse hat
         //------------------------------------------------------
-        if (m_RemainingShots > 0)
+        if (m_ShotCount > 0)
         {
             //------------------------------------------------------
             //Erstelle ein Projektil
@@ -73,92 +187,77 @@ class Canon : MonoBehaviour, IPointerDownHandler
             //------------------------------------------------------
             //Reduziere Anzahl der Schüsse
             //------------------------------------------------------
-            m_RemainingShots--;
+            m_ShotCount--;
         }
     }
 
     /// <summary>
-    /// Zeige Schuss / Lösche Anzeige
-    /// </summary>
-    public void OnPointerDown(PointerEventData pi_Ped)
-    {
-        //------------------------------------------------------
-        //Zerstöre / Erstelle je nach dem
-        //------------------------------------------------------
-        if (m_ShowedShot != null)
-            Destroy(m_ShowedShot);
-        else
-            ShowShot();
-
-        CanonMode();
-    }
-
-    private void CanonMode() {
-        CameraBehavior c = Camera.main.GetComponent<CameraBehavior>();
-        if (!c.enabled)
-        {
-            Debug.Log("Change from canon mode to camera mode, u can controll camera now");
-            c.enabled = true;
-        }
-        else
-        {
-            Debug.Log("Change from camera mode to canon mode, u can controll canon now");
-            c.enabled = false;
-        }
-    }
-
-    private void Update()
-    {
-        //-----------------------------------------------------
-        //c.enabled == false ---> canon mode
-        //-----------------------------------------------------
-        if (c.enabled)
-            return;
-
-        if (Input.touchCount == 2)
-        {
-            Touch m_TouchZero, m_TouchOne;
-            Vector2 m_PrevTouchZero, m_PrevTouchOne;
-
-            m_TouchZero = Input.GetTouch(0);
-            m_TouchOne = Input.GetTouch(1);
-
-            m_PrevTouchZero = m_TouchZero.position - m_TouchZero.deltaPosition;
-            m_PrevTouchOne = m_TouchOne.position - m_TouchOne.deltaPosition;
-
-            float l_TouchZeroDeltaAngle = Mathf.Atan2((m_TouchZero.position - m_TouchOne.position).y,
-                                                  (m_TouchZero.position - m_TouchOne.position).x) * Mathf.Rad2Deg;
-            float l_TouchOneDeltaAngle = Mathf.Atan2((m_PrevTouchZero - m_PrevTouchOne).y,
-                                                      (m_PrevTouchZero - m_PrevTouchOne).x) * Mathf.Rad2Deg;
-
-            gameObject.transform.Rotate(Vector3.up, l_TouchOneDeltaAngle - l_TouchZeroDeltaAngle);
-            Destroy(m_ShowedShot);
-            ShowShot();
-        }
-        else if (Input.touchCount == 1)
-        {
-            RaycastHit l_Hit;
-            Ray l_Ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain"));
-            gameObject.transform.position = l_Hit.point;
-            Destroy(m_ShowedShot);
-            ShowShot();
-        }
-    }
-
-    /// <summary>
-    /// Zeigt Schuss an
+    /// Zeigt Schussbahn an
     /// </summary>
     private void ShowShot()
     {
-        //------------------------------------------------------
-        //Erstelle neues Anzeigeobjekt
-        //------------------------------------------------------
-        m_ShowedShot = Instantiate(m_TrailRenderer, m_CanonSpawn.position, m_CanonSpawn.rotation);
-        // m_ShowedShot.transform.parent = gameObject.transform;
-        //------------------------------------------------------
-        //Gebe entsprechende Geschwindigkeit
-        //------------------------------------------------------
-        m_ShowedShot.GetComponent<Rigidbody>().velocity = m_CanonSpawn.forward.normalized * m_ShotVelocity;        
+        //-----------------------------------------------------
+        //Bestimme Schussgeschwindigkeit
+        //-----------------------------------------------------
+        Vector3 l_ShotVelocity = m_CanonSpawn.forward.normalized * m_ShotVelocity;
+        //-----------------------------------------------------
+        //Bestimme Teilgeschwindigkeiten
+        //-----------------------------------------------------
+        float l_Velocity_XY = Mathf.Sqrt((l_ShotVelocity.x * l_ShotVelocity.x) + (l_ShotVelocity.y * l_ShotVelocity.y));
+        float l_Velocity_XZ = Mathf.Sqrt((l_ShotVelocity.x * l_ShotVelocity.x) + (l_ShotVelocity.z * l_ShotVelocity.z));
+        //-----------------------------------------------------
+        //Bestimme Schusswinkel
+        //-----------------------------------------------------
+        float l_Angle_XY = Mathf.Atan2(l_ShotVelocity.y, l_ShotVelocity.x);
+        float l_Angle_XZ = Mathf.Atan2(l_ShotVelocity.z, l_ShotVelocity.x);
+        //-----------------------------------------------------
+        //Bestimme Auflösungsskala
+        //-----------------------------------------------------
+        float l_Resolution = m_ShotRenderResolution / l_ShotVelocity.magnitude;
+        //-----------------------------------------------------
+        //Erste Position ist der Spawn
+        //-----------------------------------------------------
+        m_ShotRenderer.positionCount = 1;
+        m_ShotRenderer.SetPosition(0, m_CanonSpawn.position);
+        //-----------------------------------------------------
+        //Maximal 1000 Punkte! (Crash-Safe)
+        //-----------------------------------------------------
+        for(int i = 1; i< 1000; i++)
+        {
+            //-----------------------------------------------------
+            //Bestimme nächste Koordinaten
+            //-----------------------------------------------------
+            float l_NextX = l_Velocity_XZ * (i * l_Resolution) * Mathf.Cos(l_Angle_XZ);
+            float l_NextY = l_Velocity_XY * (i * l_Resolution) * Mathf.Sin(l_Angle_XY) -
+                (Physics.gravity.magnitude * (i * l_Resolution) * (i * l_Resolution) / 2.0f);
+            float l_NextZ = l_Velocity_XZ * (i * l_Resolution) * Mathf.Sin(l_Angle_XZ);
+            //-----------------------------------------------------
+            //Erstelle Punkt
+            //-----------------------------------------------------
+            Vector3 l_NextPos = new Vector3(m_CanonSpawn.position.x + l_NextX,
+                                            m_CanonSpawn.position.y + l_NextY,
+                                            m_CanonSpawn.position.z + l_NextZ);
+            //------------------------------------------------------------------
+            //Falls entweder das Level oder die DeathZone getroffen wurden..
+            //------------------------------------------------------------------
+            if (Physics.Linecast(m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1), l_NextPos, LayerMask.GetMask("Terrain")) ||
+                Physics.Raycast(m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1),
+                                m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1) - l_NextPos,
+                                Mathf.Infinity, LayerMask.GetMask("DeathZone"), QueryTriggerInteraction.Collide))
+                //-----------------------------------------------------
+                //..Dann verlasse die Schleife
+                //-----------------------------------------------------
+                break;
+            else
+            {
+                //-----------------------------------------------------
+                //Ansonsten füge neue Position hinzu
+                //-----------------------------------------------------
+                m_ShotRenderer.positionCount += 1;
+                m_ShotRenderer.SetPosition(m_ShotRenderer.positionCount - 1, l_NextPos);
+            }
+        }
     }
+
+    #endregion
 }
