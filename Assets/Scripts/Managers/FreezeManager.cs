@@ -4,6 +4,10 @@ using UnityEngine;
 public class FreezeManager : MonoBehaviour {
     //-----------------------------------------------------------------
     //Singleton
+
+    // also ich finde hierbei vielleicht gibt's andere Methoden um Singleton zu realisieren, z.B. das Singleton
+    // Interfact zu implementieren oder durch set/get Methoden das zu simulieren, aber egal, statische Variable ist
+    // auch gut :)
     //-----------------------------------------------------------------
     public static FreezeManager Instance = null;
     //-----------------------------------------------------------------
