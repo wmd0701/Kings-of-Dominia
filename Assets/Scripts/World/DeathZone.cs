@@ -7,6 +7,7 @@ class DeathZone: MonoBehaviour
         //------------------------------------------------------
         //Zerstört alles was die Todeszone verlässt
         //------------------------------------------------------
-        Destroy(pi_Collision.gameObject);        
+        if(pi_Collision.tag != "Canon")
+            Destroy(pi_Collision.gameObject);        
     }
 }

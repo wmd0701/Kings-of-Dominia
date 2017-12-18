@@ -35,10 +35,23 @@ class Canon : MonoBehaviour, IPointerDownHandler
     //------------------------------------------------------
     private GameObject m_ShowedShot;
 
+    //------------------------------------------------------
+    //um die Umwandlung zwischen canon mode und camera mode kontrollieren
+    //------------------------------------------------------
+    CameraBehavior c;
+
+    [SerializeField]
+    private float CanonMoveSpeed = 5.0f;
+
+    private void Awake()
+    {
+        c = Camera.main.GetComponent<CameraBehavior>();
+    }
+
     /// <summary>
     /// Feuert Kanone ab
     /// </summary>
-   public void Shoot()
+    public void Shoot()
     {
         //------------------------------------------------------
         //Falls die Kanone noch Schüsse hat
@@ -52,7 +65,7 @@ class Canon : MonoBehaviour, IPointerDownHandler
             //------------------------------------------------------
             //Gebe dem Projektil eine Geschwindigkeit
             //------------------------------------------------------            
-            l_Ball.GetComponent<Rigidbody>().velocity = m_CanonSpawn.forward.normalized * m_ShotVelocity;            
+            l_Ball.GetComponent<Rigidbody>().velocity = m_CanonSpawn.forward.normalized * m_ShotVelocity;
             //------------------------------------------------------
             //Registriere den RB des Schusses
             //------------------------------------------------------
@@ -72,10 +85,65 @@ class Canon : MonoBehaviour, IPointerDownHandler
         //------------------------------------------------------
         //Zerstöre / Erstelle je nach dem
         //------------------------------------------------------
-        if (m_ShowedShot != null)        
+        if (m_ShowedShot != null)
             Destroy(m_ShowedShot);
         else
             ShowShot();
+
+        CanonMode();
+    }
+
+    private void CanonMode() {
+        CameraBehavior c = Camera.main.GetComponent<CameraBehavior>();
+        if (!c.enabled)
+        {
+            Debug.Log("Change from canon mode to camera mode, u can controll camera now");
+            c.enabled = true;
+        }
+        else
+        {
+            Debug.Log("Change from camera mode to canon mode, u can controll canon now");
+            c.enabled = false;
+        }
+    }
+
+    private void Update()
+    {
+        //-----------------------------------------------------
+        //c.enabled == false ---> canon mode
+        //-----------------------------------------------------
+        if (c.enabled)
+            return;
+
+        if (Input.touchCount == 2)
+        {
+            Touch m_TouchZero, m_TouchOne;
+            Vector2 m_PrevTouchZero, m_PrevTouchOne;
+
+            m_TouchZero = Input.GetTouch(0);
+            m_TouchOne = Input.GetTouch(1);
+
+            m_PrevTouchZero = m_TouchZero.position - m_TouchZero.deltaPosition;
+            m_PrevTouchOne = m_TouchOne.position - m_TouchOne.deltaPosition;
+
+            float l_TouchZeroDeltaAngle = Mathf.Atan2((m_TouchZero.position - m_TouchOne.position).y,
+                                                  (m_TouchZero.position - m_TouchOne.position).x) * Mathf.Rad2Deg;
+            float l_TouchOneDeltaAngle = Mathf.Atan2((m_PrevTouchZero - m_PrevTouchOne).y,
+                                                      (m_PrevTouchZero - m_PrevTouchOne).x) * Mathf.Rad2Deg;
+
+            gameObject.transform.Rotate(Vector3.up, l_TouchOneDeltaAngle - l_TouchZeroDeltaAngle);
+            Destroy(m_ShowedShot);
+            ShowShot();
+        }
+        else if (Input.touchCount == 1)
+        {
+            RaycastHit l_Hit;
+            Ray l_Ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain"));
+            gameObject.transform.position = l_Hit.point;
+            Destroy(m_ShowedShot);
+            ShowShot();
+        }
     }
 
     /// <summary>
@@ -87,6 +155,7 @@ class Canon : MonoBehaviour, IPointerDownHandler
         //Erstelle neues Anzeigeobjekt
         //------------------------------------------------------
         m_ShowedShot = Instantiate(m_TrailRenderer, m_CanonSpawn.position, m_CanonSpawn.rotation);
+        // m_ShowedShot.transform.parent = gameObject.transform;
         //------------------------------------------------------
         //Gebe entsprechende Geschwindigkeit
         //------------------------------------------------------
