@@ -49,11 +49,22 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     //------------------------------------------------------
     [SerializeField]
     private GameObject m_DominoPrefab;
+
     //------------------------------------------------------
-    //Eis-Domino Prefab
+    //Material & Physical Material von Domino und Domino_Ice
     //------------------------------------------------------
     [SerializeField]
-    private GameObject m_DominoIcePrefab;
+    private Material Domino;
+
+    [SerializeField]
+    private Material Domino_Ice;
+
+    [SerializeField]
+    private PhysicMaterial Domino_Physic;
+
+    [SerializeField]
+    private PhysicMaterial Domino_Ice_Physic;
+
     //------------------------------------------------------
     //LineRenderer für Spawnlinie
     //------------------------------------------------------    
@@ -121,13 +132,19 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //------------------------------------------------------
                     //Ändere nur falls es ein normaler Domino ist
                     //------------------------------------------------------
-                    if (l_Hit.collider.material.dynamicFriction > .5f)
+                    if (l_Hit.transform.GetComponent<Collider>().sharedMaterial.Equals(Domino_Physic) &&
+                        l_Hit.transform.GetComponent<MeshRenderer>().sharedMaterial.Equals(Domino))                    
                     {
                         //------------------------------------------------------
                         //Passe Material und Physics-Material des Dominos an
                         //------------------------------------------------------
-                        l_Hit.transform.GetComponent<MeshRenderer>().sharedMaterial = m_DominoIcePrefab.GetComponent<MeshRenderer>().sharedMaterial;
-                        l_Hit.transform.GetComponent<Collider>().sharedMaterial = m_DominoIcePrefab.GetComponent<Collider>().sharedMaterial;
+
+                        //Es ist so in Unity Dokumentation empfohlen, dass man material statt sharedMaterial zu modifizieren,
+                        //weil wenn man shardMaterial verändert, werden vielleicht alle Objekte, die das sharedMaterial nutzen,
+                        //verändert. Aber ich weiß nicht warum dieses Phänomen hier bei uns nicht vorkommt.
+                        l_Hit.transform.GetComponent<MeshRenderer>().material = Domino_Ice;
+                        l_Hit.transform.GetComponent<Collider>().material = Domino_Ice_Physic;
+                        
                         //------------------------------------------------------
                         //Speichere den Change
                         //------------------------------------------------------
