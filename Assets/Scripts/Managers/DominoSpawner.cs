@@ -375,8 +375,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                         //------------------------------------------------------
                         //Wechsle Material und Physics-Material zurück
                         //------------------------------------------------------
-                        b_Domino.GetComponent<MeshRenderer>().sharedMaterial = m_DominoPrefab.GetComponent<MeshRenderer>().sharedMaterial;
-                        b_Domino.GetComponent<Collider>().sharedMaterial = m_DominoPrefab.GetComponent<Collider>().sharedMaterial;
+                        b_Domino.GetComponent<MeshRenderer>().material = Domino;
+                        b_Domino.GetComponent<Collider>().material = Domino_Physic;
                         break;
                 }
             }
