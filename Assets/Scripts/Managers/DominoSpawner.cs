@@ -11,9 +11,18 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     private class DominoChange : Change
     {
         /// <summary>
+        /// Enum für Undo-Modi
+        /// </summary>
+        public enum enRestoreMode
+        {
+            Destroy,
+            Replace
+        }
+
+        /// <summary>
         /// Get/Set Änderungen
         /// </summary>
-        public GameObject[] m_LastSpawned { get; private set; }
+        public GameObject[] m_ChangedDominos { get; private set; }
 
         /// <summary>
         /// Wiederherstellmodus
@@ -24,23 +33,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
         /// Initialisiert neue Änderung
         /// </summary>
         /// <param name="pi_LastSpawned">Array mit den Steinen</param>
-        public DominoChange(GameObject[] pi_LastSpawned, enRestoreMode pi_Mode) {
-            m_LastSpawned = pi_LastSpawned;
+        public DominoChange(GameObject[] pi_ChangedDominos, enRestoreMode pi_Mode) {
+            m_ChangedDominos = pi_ChangedDominos;
             m_Mode = pi_Mode;
         }
-    }
-
-    #endregion
-
-    #region Enums
-
-    /// <summary>
-    /// Enum für den Undo-Modus
-    /// </summary>
-    private enum enRestoreMode
-    {
-        Destroy = 0,
-        Replace = 1
     }
 
     #endregion
@@ -74,9 +70,9 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     [SerializeField]
     private float m_EpsilonSpawnHeight = 0.01f;
     //------------------------------------------------------
-    //Für Änderungen rückgängig machen
+    //Um Änderungen rückgängig zu machen
     //------------------------------------------------------
-    DominoChange m_LatestChange;
+    Stack<DominoChange> m_Changes = new Stack<DominoChange>();
 
     #endregion
 
@@ -123,25 +119,20 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
-                    //..Speichere Transform
+                    //Ändere nur falls es ein normaler Domino ist
                     //------------------------------------------------------
-                    Transform l_Replace = l_Hit.transform;
-                    //------------------------------------------------------
-                    //Lösche den Domino
-                    //------------------------------------------------------
-                    Destroy(l_Hit.transform.gameObject);
-                    //------------------------------------------------------
-                    //Erstelle neuen Eisdomino an der gleichen Position
-                    //------------------------------------------------------
-                    GameObject l_NewDomino = Instantiate(m_DominoIcePrefab, l_Replace.position, l_Replace.rotation);
-                    //------------------------------------------------------
-                    //Registriere RB
-                    //------------------------------------------------------
-                    FreezeManager.Instance.RegisterRB(l_NewDomino.GetComponent<Rigidbody>());
-                    //------------------------------------------------------
-                    //Speichere Veränderung
-                    //------------------------------------------------------
-                    SaveLastChange(new DominoChange(new GameObject[] { l_NewDomino }, enRestoreMode.Replace));
+                    if (l_Hit.collider.material.dynamicFriction > .5f)
+                    {
+                        //------------------------------------------------------
+                        //Passe Material und Physics-Material des Dominos an
+                        //------------------------------------------------------
+                        l_Hit.transform.GetComponent<MeshRenderer>().sharedMaterial = m_DominoIcePrefab.GetComponent<MeshRenderer>().sharedMaterial;
+                        l_Hit.transform.GetComponent<Collider>().sharedMaterial = m_DominoIcePrefab.GetComponent<Collider>().sharedMaterial;
+                        //------------------------------------------------------
+                        //Speichere den Change
+                        //------------------------------------------------------
+                        SaveLastChange(new DominoChange(new GameObject[] { l_Hit.transform.gameObject }, DominoChange.enRestoreMode.Replace));
+                    }
                 }
                 //------------------------------------------------------
                 //Falls im Editmode und das Level getroffen wurde..
@@ -305,69 +296,74 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //-----------------------------------------------------------
                 //Speicher Änderung
                 //-----------------------------------------------------------
-                SaveLastChange(new DominoChange(l_Spawned, enRestoreMode.Destroy));
+                SaveLastChange(new DominoChange(l_Spawned, DominoChange.enRestoreMode.Destroy));
             }
         }
     }
 
     /// <summary>
-    /// Speichert Änderung
+    /// Speichert letzte Änderung
     /// </summary>
     /// <param name="pi_Change">Änderung</param>
     public void SaveLastChange(Change pi_Change)
     {
-        m_LatestChange = (DominoChange) pi_Change;
+        //-----------------------------------------------------------
+        //Speichere nur falls noch nicht gespeichert
+        //-----------------------------------------------------------
+        if (!m_Changes.Contains((DominoChange)pi_Change))
+        {
+            m_Changes.Push((DominoChange) pi_Change);
+        }
     }
 
     /// <summary>
-    /// Lädt Stand vor der Änderung
+    /// Lädt Stand vor der letzten Änderung
     /// </summary>
     public void RestoreLastSave()
     {
         //-----------------------------------------------------------
         //Geht nur falls es eine Änderung gab bzw. im Edit-Mode
         //-----------------------------------------------------------
-        if (m_LatestChange == null || !FreezeManager.Instance.Frozen)
+        if (m_Changes.Count == 0 || !FreezeManager.Instance.Frozen)
             return;
-        //-----------------------------------------------------------
-        //Gehe durch die Dominos
-        //-----------------------------------------------------------
-        foreach (GameObject b_Domino in m_LatestChange.m_LastSpawned)
+        else
         {
             //-----------------------------------------------------------
-            //Je nach Modus
+            //Bestimme letzten Change
             //-----------------------------------------------------------
-            switch (m_LatestChange.m_Mode)
+            DominoChange l_LastChange = m_Changes.Pop();
+            //-----------------------------------------------------------
+            //Gehe durch die geänderten Dominos
+            //-----------------------------------------------------------
+            foreach (GameObject b_Domino in l_LastChange.m_ChangedDominos)
             {
-                case enRestoreMode.Destroy:
-                    //-----------------------------------------------------------
-                    //Entferne altes Objekt
-                    //-----------------------------------------------------------
-                    FreezeManager.Instance.RemoveRB(b_Domino.GetComponent<Rigidbody>());
-                    Destroy(b_Domino);
-                    break;
-                case enRestoreMode.Replace:
-                    //-----------------------------------------------------------
-                    //Speichere Transform
-                    //-----------------------------------------------------------
-                    Transform l_OldObject = b_Domino.transform;
-                    //-----------------------------------------------------------
-                    //Entferne altes Objekt
-                    //-----------------------------------------------------------
-                    FreezeManager.Instance.RemoveRB(b_Domino.GetComponent<Rigidbody>());
-                    Destroy(b_Domino);
-                    //-----------------------------------------------------------
-                    //Instantiiere neuen Domino und füge RB zum Manager hinzu
-                    //-----------------------------------------------------------
-                    FreezeManager.Instance.RegisterRB(Instantiate(m_DominoPrefab, l_OldObject.position, l_OldObject.rotation).GetComponent<Rigidbody>());
-                    break;
-            }            
+                //-----------------------------------------------------------
+                //Überspringe falls Domino nicht mehr existiert
+                //-----------------------------------------------------------
+                if (b_Domino == null)
+                    continue;
+                //-----------------------------------------------------------
+                //Je nach Modus
+                //-----------------------------------------------------------
+                switch (l_LastChange.m_Mode)
+                {
+                    case DominoChange.enRestoreMode.Destroy:
+                        //-----------------------------------------------------------
+                        //Entferne altes Objekt
+                        //-----------------------------------------------------------
+                        FreezeManager.Instance.RemoveRB(b_Domino.GetComponent<Rigidbody>());
+                        Destroy(b_Domino);
+                        break;
+                    case DominoChange.enRestoreMode.Replace:
+                        //------------------------------------------------------
+                        //Wechsle Material und Physics-Material zurück
+                        //------------------------------------------------------
+                        b_Domino.GetComponent<MeshRenderer>().sharedMaterial = m_DominoPrefab.GetComponent<MeshRenderer>().sharedMaterial;
+                        b_Domino.GetComponent<Collider>().sharedMaterial = m_DominoPrefab.GetComponent<Collider>().sharedMaterial;
+                        break;
+                }
+            }
         }
-        //-----------------------------------------------------------
-        //Entferne Change
-        //-----------------------------------------------------------
-        m_LatestChange = null;
     }
-
     #endregion
 }
