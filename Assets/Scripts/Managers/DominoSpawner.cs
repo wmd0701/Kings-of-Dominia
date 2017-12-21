@@ -288,10 +288,18 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 for (int i = 0; i < l_InterpolatedPositions.Count; i++)
                 {
                     //-----------------------------------------------------------------
-                    //Füge RB zum Manager hinzu und GameObject ins Array
+                    //Falls es unter dem Dominostein Terrain gibt
+                    //ToDo
                     //-----------------------------------------------------------------
-                    l_Spawned[i] = Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
-                    FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());
+                    RaycastHit l_out;
+                    if (Physics.Raycast(l_InterpolatedPositions[i], Vector3.down, out l_out))
+                    {
+                        //-----------------------------------------------------------------
+                        //Füge RB zum Manager hinzu und GameObject ins Array
+                        //-----------------------------------------------------------------
+                        l_Spawned[i] = Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
+                        FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());
+                    }
                 }
                 //-----------------------------------------------------------
                 //Speicher Änderung
