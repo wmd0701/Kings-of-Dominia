@@ -5,10 +5,11 @@ public class SoundEffectManager : MonoBehaviour
 
 	public static SoundEffectManager Instance = null;
 
-	[SerializeField] private AudioClip clip_BallContact;
+	[SerializeField] private AudioClip clip_CanonDominoContact;
 	[SerializeField] private AudioClip clip_MenuClose;
 	[SerializeField] private AudioClip clip_MenuOpen;
 	[SerializeField] private AudioClip clip_DominoFall;
+	[SerializeField] private AudioClip clip_DominoSetting;
 	[SerializeField] private AudioClip[] clips_CanonShot;
 
 	private AudioSource[] myAudioSources;
@@ -38,9 +39,9 @@ public class SoundEffectManager : MonoBehaviour
 		PlaySound(clip_MenuClose);
 	}
 
-	public void PlayBallContact()
+	public void PlayCanonDominoContact()
 	{
-		PlaySound(clip_BallContact);
+		PlaySound(clip_CanonDominoContact);
 	}
 
 	public void PlayDominoFall()
@@ -48,6 +49,10 @@ public class SoundEffectManager : MonoBehaviour
 		PlaySound(clip_DominoFall);
 	}
 
+	public void PlayDominoSetting()
+	{
+		PlaySound(clip_DominoSetting);
+	}
 
 	public void PlayCanonShot()
 	{
