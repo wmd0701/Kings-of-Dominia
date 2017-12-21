@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SoundEffectManager : MonoBehaviour
 {
 
 	public static SoundEffectManager Instance = null;
-
 
 	[SerializeField] private AudioClip clip_BallContact;
 	[SerializeField] private AudioClip clip_MenuClose;
@@ -24,7 +21,7 @@ public class SoundEffectManager : MonoBehaviour
 		myAudioSources = new AudioSource[1];
 
 		GameObject audioSource1 = new GameObject("audioSource_1");
-		Utils.AddAudioListener(audioSource1, false, 1.0f, false);
+		SoundUtilities.AddAudioListener(audioSource1, false, 1.0f, false);
 		audioSource1.transform.parent = transform;
 		myAudioSources[0] = audioSource1.GetComponent<AudioSource>();
 
@@ -69,7 +66,7 @@ public class SoundEffectManager : MonoBehaviour
 			}
 			else
 			{
-				Utils.PlaySound(aS, clip);
+				SoundUtilities.PlaySound(aS, clip);
 			}
 		}
 	}
@@ -84,11 +81,8 @@ public class SoundEffectManager : MonoBehaviour
 			}
 			else
 			{
-				Utils.PlayRandomSound(aS, clips);
+				SoundUtilities.PlayRandomSound(aS, clips);
 			}
 		}
 	}
-
-
-
 }

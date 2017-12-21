@@ -244,7 +244,6 @@ class Canon : MonoBehaviour, IPointerDownHandler
                 Physics.Raycast(m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1),
                                 m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1) - l_NextPos,
                                 Mathf.Infinity, LayerMask.GetMask("DeathZone"), QueryTriggerInteraction.Collide))
-                // warum nicht Raycast(Vector3 origin, Vector3 direction, out RaycastHit hitInfo, float maxDistance, int layerMask)??
                 //-----------------------------------------------------
                 //..Dann verlasse die Schleife
                 //-----------------------------------------------------

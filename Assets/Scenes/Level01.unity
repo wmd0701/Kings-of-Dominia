@@ -88,7 +88,6 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
-    m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -199,28 +198,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114189886422428484, guid: 0f57ed41ad7d9c54aae48978296f2026,
-        type: 2}
-      propertyPath: Domino
-      value: 
-      objectReference: {fileID: 2100000, guid: 875e20e11d867f04f81152cd345793e3, type: 2}
-    - target: {fileID: 114189886422428484, guid: 0f57ed41ad7d9c54aae48978296f2026,
-        type: 2}
-      propertyPath: Domino_Ice
-      value: 
-      objectReference: {fileID: 2100000, guid: 81adeb8ab7804204ca11fec50d250681, type: 2}
-    - target: {fileID: 114189886422428484, guid: 0f57ed41ad7d9c54aae48978296f2026,
-        type: 2}
-      propertyPath: Domino_Physic
-      value: 
-      objectReference: {fileID: 13400000, guid: 4409f502ed5c1ba4d8e9253a4de30283,
-        type: 2}
-    - target: {fileID: 114189886422428484, guid: 0f57ed41ad7d9c54aae48978296f2026,
-        type: 2}
-      propertyPath: Domino_Ice_Physic
-      value: 
-      objectReference: {fileID: 13400000, guid: f8ed7a4ff7148a34c935345e71dd2969,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0f57ed41ad7d9c54aae48978296f2026, type: 2}
   m_IsPrefabParent: 0
@@ -544,6 +521,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1047242765 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1340503453108946, guid: 555ca2f524bb7c64b967e3bb20bda106,
+    type: 2}
+  m_PrefabInternal: {fileID: 1175762705}
+--- !u!114 &1047242766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1047242765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b3d5b5916537414b841a6038ac4faec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip_BallContact: {fileID: 0}
+  clip_MenuClose: {fileID: 0}
+  clip_MenuOpen: {fileID: 0}
+  clip_DominoFall: {fileID: 0}
+  clips_CanonShot: []
 --- !u!4 &1124733575 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4731297701090050, guid: 0f57ed41ad7d9c54aae48978296f2026,
@@ -587,6 +585,10 @@ Prefab:
     - target: {fileID: 4292717935659374, guid: 555ca2f524bb7c64b967e3bb20bda106, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1340503453108946, guid: 555ca2f524bb7c64b967e3bb20bda106, type: 2}
+      propertyPath: m_Name
+      value: Managers
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 555ca2f524bb7c64b967e3bb20bda106, type: 2}

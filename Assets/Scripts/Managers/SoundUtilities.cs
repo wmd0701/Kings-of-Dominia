@@ -1,10 +1,7 @@
-﻿
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Audio;
 
-public class Utils : MonoBehaviour {
+public class SoundUtilities : MonoBehaviour {
 
 	/// <summary>
 	/// Gets a random index for a given array
@@ -14,6 +11,9 @@ public class Utils : MonoBehaviour {
 		return Random.Range(0, arrayLength);
 	} 
 
+    /// <summary>
+    /// Get random rotation around y-axis
+    /// </summary>
 	public static Quaternion GetRndStandRotation()
 	{
 		return Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0));
@@ -28,7 +28,7 @@ public class Utils : MonoBehaviour {
 		{
 			if (source != null)
 			{
-				source.clip = clips[Utils.GetRndIndex(clips.Length)];
+				source.clip = clips[SoundUtilities.GetRndIndex(clips.Length)];
 				source.Play();
 			}
 			else
@@ -43,6 +43,11 @@ public class Utils : MonoBehaviour {
 		}
 	}
 
+    /// <summary>
+    /// Plays given sound on given source
+    /// </summary>
+    /// <param name="source">Audiosource</param>
+    /// <param name="clip">Audioclip</param>
 	public static void PlaySound(AudioSource source, AudioClip clip)
 	{
 		if (source != null)
@@ -56,6 +61,10 @@ public class Utils : MonoBehaviour {
 		}
 	} 
 
+    /// <summary>
+    /// Stops source from playing audio
+    /// </summary>
+    /// <param name="source">Audiosource</param>
 	public static void StopSound(AudioSource source)
 	{
 		if (source != null)
@@ -89,7 +98,6 @@ public class Utils : MonoBehaviour {
 	/// Gets the angle in (0, 360) of the given vector to the X axis of the world coordinate
 	/// </summary>
 	/// <param name="vec1"></param>
-	/// <returns></returns>
 	public static float GetAbsoluteAngle(Vector2 vec1)
 	{
 		float aCos = Mathf.Acos(vec1.x) / Mathf.PI;
@@ -102,6 +110,11 @@ public class Utils : MonoBehaviour {
 	}
 
 	#region AddAudioListener Overrides
+
+    /// <summary>
+    /// Adds audio listener to a gameobject
+    /// </summary>
+    /// <param name="toGameObject">Gameobject</param>    
 	public static AudioSource AddAudioListener(GameObject toGameObject)
 	{
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
@@ -113,6 +126,11 @@ public class Utils : MonoBehaviour {
 		return aS;
 	}
 
+    /// <summary>
+    /// Adds audio listener to a gameobject
+    /// </summary>
+    /// <param name="toGameObject">Gameobject</param>
+    /// <param name="is3D">Bool if is for 3D sound</param>
 	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D)
 	{
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
@@ -132,6 +150,12 @@ public class Utils : MonoBehaviour {
 		return aS;
 	}
 
+    /// <summary>
+    /// Adds audio listener to gameobject
+    /// </summary>
+    /// <param name="toGameObject">Gameobject</param>
+    /// <param name="is3D">Bool if is 3D sound</param>
+    /// <param name="volume">Volume</param>
 	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D, float volume)
 	{
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
@@ -152,6 +176,13 @@ public class Utils : MonoBehaviour {
 		return aS;
 	}
 
+    /// <summary>
+    /// Adds audio listener to gameobject
+    /// </summary>
+    /// <param name="toGameObject">Gameobject</param>
+    /// <param name="is3D">Bool if is 3D sound</param>
+    /// <param name="volume">Volume</param>
+    /// <param name="isLoop">Bool if is looping</param>
 	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D, float volume, bool isLoop)
 	{
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
@@ -173,6 +204,14 @@ public class Utils : MonoBehaviour {
 		return aS;
 	}
 
+    /// <summary>
+    /// Adds audio listener to gameobject
+    /// </summary>
+    /// <param name="toGameObject">Gameobject</param>
+    /// <param name="is3D">Bool if is 3D sound</param>
+    /// <param name="volume">Volume</param>
+    /// <param name="isLoop">Bool if is looping</param>
+    /// <param name="audioMixerGroup">Audiomixtergroup</param>
 	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D, float volume, bool isLoop, AudioMixerGroup audioMixerGroup)
 	{
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
@@ -191,6 +230,6 @@ public class Utils : MonoBehaviour {
 		return aS;
 	}
 
-
 	#endregion
+
 }

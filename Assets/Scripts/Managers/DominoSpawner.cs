@@ -137,11 +137,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     {
                         //------------------------------------------------------
                         //Passe Material und Physics-Material des Dominos an
-                        //------------------------------------------------------
-
-                        //Es ist so in Unity Dokumentation empfohlen, dass man material statt sharedMaterial zu modifizieren,
-                        //weil wenn man shardMaterial verändert, werden vielleicht alle Objekte, die das sharedMaterial nutzen,
-                        //verändert. Aber ich weiß nicht warum dieses Phänomen hier bei uns nicht vorkommt.
+                        //------------------------------------------------------                        
                         l_Hit.transform.GetComponent<MeshRenderer>().material = Domino_Ice;
                         l_Hit.transform.GetComponent<Collider>().material = Domino_Ice_Physic;
                         

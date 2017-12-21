@@ -54,8 +54,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DominoPrefab: {fileID: 1729889450283248, guid: 0e6173b376c035e4ba0c060d0a2945d0,
     type: 2}
-  m_DominoIcePrefab: {fileID: 1142299761358070, guid: 2a02ce0a4f9e9744498a52d3ab34dc3f,
-    type: 2}
+  Domino: {fileID: 2100000, guid: 875e20e11d867f04f81152cd345793e3, type: 2}
+  Domino_Ice: {fileID: 2100000, guid: 81adeb8ab7804204ca11fec50d250681, type: 2}
+  Domino_Physic: {fileID: 13400000, guid: 4409f502ed5c1ba4d8e9253a4de30283, type: 2}
+  Domino_Ice_Physic: {fileID: 13400000, guid: f8ed7a4ff7148a34c935345e71dd2969, type: 2}
   m_DominoDistance: 1
   m_EpsilonSpawnHeight: 0.01
 --- !u!120 &120962958477384440
