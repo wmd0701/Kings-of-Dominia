@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 65584373485369208}
   - component: {fileID: 54032304644598332}
   m_Layer: 9
-  m_Name: DominoIce
+  m_Name: dominoIce
   m_TagString: DominoIce
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

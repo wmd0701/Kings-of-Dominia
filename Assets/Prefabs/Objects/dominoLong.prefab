@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 65430960657509568}
   - component: {fileID: 54279305085543298}
   m_Layer: 9
-  m_Name: DominoLong
+  m_Name: dominoLong
   m_TagString: DominoLong
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
