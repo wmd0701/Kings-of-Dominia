@@ -45,26 +45,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
 
     [Header("Objects")]
     //------------------------------------------------------
-    //Domino Prefab
+    //Domino Prefabs (Suche mit Tag)
     //------------------------------------------------------
     [SerializeField]
-    private GameObject m_DominoPrefab;
-
-    //------------------------------------------------------
-    //Material & Physical Material von Domino und Domino_Ice
-    //------------------------------------------------------
-    [SerializeField]
-    private Material Domino;
-
-    [SerializeField]
-    private Material Domino_Ice;
-
-    [SerializeField]
-    private PhysicMaterial Domino_Physic;
-
-    [SerializeField]
-    private PhysicMaterial Domino_Ice_Physic;
-
+    private GameObject[] m_DominoPrefabs;
     //------------------------------------------------------
     //LineRenderer für Spawnlinie
     //------------------------------------------------------    
@@ -74,7 +58,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     //Distanz zwischen Touches und Dominos
     //------------------------------------------------------
     [SerializeField]
-    private float m_DominoDistance = 0.01f;
+    private float m_DominoDistance = 1.0f;
     //------------------------------------------------------
     //Distanz +/- ab Null wo gespawnt werden darf/kann
     //------------------------------------------------------
@@ -132,15 +116,22 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //------------------------------------------------------
                     //Ändere nur falls es ein normaler Domino ist
                     //------------------------------------------------------
-                    if (l_Hit.transform.GetComponent<Collider>().sharedMaterial.Equals(Domino_Physic) &&
-                        l_Hit.transform.GetComponent<MeshRenderer>().sharedMaterial.Equals(Domino))                    
+                    if (l_Hit.transform.tag == "DominoStandart")                    
                     {
+
+
+
+
+                        //-----------------------------------------------------------
+                        //Finde Eis Domino
+                        //-----------------------------------------------------------
+                        GameObject IceDomino = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.gameObject.tag == "DominoIce");
                         //------------------------------------------------------
                         //Passe Material und Physics-Material des Dominos an
-                        //------------------------------------------------------                        
-                        l_Hit.transform.GetComponent<MeshRenderer>().material = Domino_Ice;
-                        l_Hit.transform.GetComponent<Collider>().material = Domino_Ice_Physic;
-                        
+                        //------------------------------------------------------
+                        l_Hit.transform.GetComponent<MeshRenderer>().material = IceDomino.transform.GetComponent<MeshRenderer>().sharedMaterial;                        
+                        l_Hit.transform.GetComponent<MeshFilter>().mesh = IceDomino.transform.GetComponent<MeshFilter>().sharedMesh;
+                        l_Hit.transform.GetComponent<Collider>().material = IceDomino.transform.GetComponent<Collider>().sharedMaterial;
                         //------------------------------------------------------
                         //Speichere den Change
                         //------------------------------------------------------
@@ -296,6 +287,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //-----------------------------------------------------------
                 GameObject[] l_Spawned = new GameObject[l_InterpolatedPositions.Count];
                 //-----------------------------------------------------------
+                //Finde Standart Domino
+                //-----------------------------------------------------------
+                GameObject Domino = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.gameObject.tag == "DominoStandart");
+                //-----------------------------------------------------------
                 //Spawne Steine mit entsprechenden Koordinaten und Rotationen
                 //-----------------------------------------------------------
                 for (int i = 0; i < l_InterpolatedPositions.Count; i++)
@@ -303,7 +298,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //-----------------------------------------------------------------
                     //Füge RB zum Manager hinzu und GameObject ins Array
                     //-----------------------------------------------------------------
-                    l_Spawned[i] = Instantiate(m_DominoPrefab, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
+                    l_Spawned[i] = Instantiate(Domino, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
                     FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());
                 }
                 //-----------------------------------------------------------
@@ -368,11 +363,16 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                         Destroy(b_Domino);
                         break;
                     case DominoChange.enRestoreMode.Replace:
+                        //-----------------------------------------------------------
+                        //Finde Standart Domino
+                        //-----------------------------------------------------------
+                        GameObject Domino = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.gameObject.tag == "DominoStandart");
                         //------------------------------------------------------
                         //Wechsle Material und Physics-Material zurück
                         //------------------------------------------------------
-                        b_Domino.GetComponent<MeshRenderer>().material = Domino;
-                        b_Domino.GetComponent<Collider>().material = Domino_Physic;
+                        b_Domino.GetComponent<MeshRenderer>().material = Domino.transform.GetComponent<MeshRenderer>().sharedMaterial;
+                        b_Domino.GetComponent<MeshFilter>().mesh = Domino.transform.GetComponent<MeshFilter>().sharedMesh;
+                        b_Domino.GetComponent<Collider>().material = Domino.transform.GetComponent<Collider>().sharedMaterial;
                         break;
                 }
             }

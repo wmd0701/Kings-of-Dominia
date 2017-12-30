@@ -7,7 +7,7 @@ public class CanonTrigger : MonoBehaviour
         //------------------------------------------------------
         //Wenn ein Domino den Trigger berührt hat
         //------------------------------------------------------
-        if (pi_Collision.transform.tag == "Dominos")
+        if (pi_Collision.transform.tag.Contains("Domino"))
         {
             //------------------------------------------------------
             //Feuere die Kanone ab

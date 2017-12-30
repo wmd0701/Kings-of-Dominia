@@ -2,15 +2,14 @@
 
 public class SoundEffectManager : MonoBehaviour
 {
-
 	public static SoundEffectManager Instance = null;
 
-	[SerializeField] private AudioClip clip_CanonDominoContact;
-	[SerializeField] private AudioClip clip_MenuClose;
-	[SerializeField] private AudioClip clip_MenuOpen;
-	[SerializeField] private AudioClip clip_DominoFall;
-	[SerializeField] private AudioClip clip_DominoSetting;
-	[SerializeField] private AudioClip[] clips_CanonShot;
+	[SerializeField] private AudioClip m_CanonDominoContact;
+	[SerializeField] private AudioClip m_MenuClose;
+	[SerializeField] private AudioClip m_MenuOpen;
+	[SerializeField] private AudioClip m_DominoFall;
+	[SerializeField] private AudioClip m_DominoSetting;
+	[SerializeField] private AudioClip[] m_CanonShots;
 
 	private AudioSource[] myAudioSources;
 
@@ -21,45 +20,41 @@ public class SoundEffectManager : MonoBehaviour
 
 		myAudioSources = new AudioSource[1];
 
-		GameObject audioSource1 = new GameObject("audioSource_1");
-		SoundUtilities.AddAudioListener(audioSource1, false, 1.0f, false);
-		audioSource1.transform.parent = transform;
-		myAudioSources[0] = audioSource1.GetComponent<AudioSource>();
-
+		GameObject l_NewSource = new GameObject("AddedSource");
+		SoundUtilities.AddAudioListener(l_NewSource, false, 1.0f, false);
+		l_NewSource.transform.parent = transform;
+		myAudioSources[0] = l_NewSource.GetComponent<AudioSource>();
 	}
-
 
 	public void PlayOpenMenu()
 	{
-		PlaySound(clip_MenuOpen);   
+		PlaySound(m_MenuOpen);   
 	}
 
 	public void PlayCloseMenu()
 	{
-		PlaySound(clip_MenuClose);
+		PlaySound(m_MenuClose);
 	}
 
 	public void PlayCanonDominoContact()
 	{
-		PlaySound(clip_CanonDominoContact);
+		PlaySound(m_CanonDominoContact);
 	}
 
 	public void PlayDominoFall()
 	{
-		PlaySound(clip_DominoFall);
+		PlaySound(m_DominoFall);
 	}
 
 	public void PlayDominoSetting()
 	{
-		PlaySound(clip_DominoSetting);
+		PlaySound(m_DominoSetting);
 	}
 
 	public void PlayCanonShot()
 	{
-		PlayRandomSound(clips_CanonShot);
+		PlayRandomSound(m_CanonShots);
 	}
-
-
 
 	private void PlaySound(AudioClip clip)
 	{

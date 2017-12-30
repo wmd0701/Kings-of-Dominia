@@ -4,9 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Dominos
   - Terrain
   - Canon
+  - DominoIce
+  - DominoLong
+  - DominoStandart
   layers:
   - Default
   - TransparentFX
