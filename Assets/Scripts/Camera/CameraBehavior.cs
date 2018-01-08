@@ -32,12 +32,71 @@ public class CameraBehavior : MonoBehaviour
     //------------------------------------------------------
     private Touch m_TouchZero, m_TouchOne;
     private Vector2 m_PrevTouchZero, m_PrevTouchOne;
-
+    //------------------------------------------------------
+    //Bool ob in Editmode
+    //------------------------------------------------------
+    private bool m_InEditMode = false;
+    
     #endregion
 
     #region Catch Events
 
-    private void Update () {
+    private void Update () {    
+        //------------------------------------------------------
+        //Passe Blickwinkel falls notwendig an
+        //------------------------------------------------------
+        if (FreezeManager.Instance.Frozen && !m_InEditMode)
+        {
+            //------------------------------------------------------
+            //Wechsle Modus
+            //------------------------------------------------------
+            m_InEditMode = !m_InEditMode;
+            //------------------------------------------------------
+            //Berechne Distanz zu Blickpunkt
+            //------------------------------------------------------
+            float l_Distance = Mathf.Cos(Mathf.PI / 4) * Camera.main.transform.position.y / Mathf.Sin(Mathf.PI / 4);
+            //------------------------------------------------------
+            //Bestimme neue Kameraposition (über Blickpunkt)
+            //------------------------------------------------------
+            float l_AddZ = Mathf.Cos(Camera.main.transform.rotation.eulerAngles.y * Mathf.Deg2Rad) * l_Distance;
+            float l_AddX = Mathf.Sin(Camera.main.transform.rotation.eulerAngles.y * Mathf.Deg2Rad) * l_Distance;
+            //------------------------------------------------------
+            //Bewege Kamera
+            //------------------------------------------------------        
+            Camera.main.transform.Translate(l_AddX, 0, l_AddZ, Space.World);
+            //------------------------------------------------------
+            //Rotiere Kamera
+            //------------------------------------------------------
+            Camera.main.transform.rotation = Quaternion.Euler(90f,
+                                                              Camera.main.transform.rotation.eulerAngles.y,
+                                                              Camera.main.transform.rotation.eulerAngles.z);            
+        }
+        else if(!FreezeManager.Instance.Frozen && m_InEditMode)
+        {
+            //------------------------------------------------------
+            //Wechsle
+            //------------------------------------------------------
+            m_InEditMode = !m_InEditMode;
+            //------------------------------------------------------
+            //Distanz
+            //------------------------------------------------------
+            float l_Distance = Mathf.Cos(Mathf.PI / 4) * Camera.main.transform.position.y / Mathf.Sin(Mathf.PI / 4);
+            //------------------------------------------------------
+            //Neue Kameraposition (Blickpunkt in der Mitte)
+            //------------------------------------------------------
+            float l_AddZ = -Mathf.Cos(Camera.main.transform.rotation.eulerAngles.y * Mathf.Deg2Rad) * l_Distance;
+            float l_AddX = -Mathf.Sin(Camera.main.transform.rotation.eulerAngles.y * Mathf.Deg2Rad) * l_Distance;
+            //------------------------------------------------------
+            //Bewege
+            //------------------------------------------------------
+            Camera.main.transform.Translate(l_AddX, 0, l_AddZ, Space.World);
+            //------------------------------------------------------
+            //Rotiere zurück
+            //------------------------------------------------------
+            Camera.main.transform.rotation = Quaternion.Euler(45f,
+                                                              Camera.main.transform.rotation.eulerAngles.y,
+                                                              Camera.main.transform.rotation.eulerAngles.z);
+        }
         //------------------------------------------------------
         //Falls es zwei Touches gab
         //------------------------------------------------------

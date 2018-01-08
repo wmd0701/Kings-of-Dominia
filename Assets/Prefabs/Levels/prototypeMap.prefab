@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 64481538783281744}
   - component: {fileID: 64881817405882150}
   m_Layer: 8
-  m_Name: Map01
+  m_Name: prototypeMap
   m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

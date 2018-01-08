@@ -148,8 +148,8 @@ public class FreezeManager : MonoBehaviour {
                     //-----------------------------------------------------------------
                     //Speichere ggf.  Geschwindigkeit
                     //-----------------------------------------------------------------
-                    if (b_RB.velocity.magnitude > 0)                    
-                        m_Velocities.Add(b_RB, b_RB.velocity);                    
+                    if (b_RB.velocity.magnitude > 0 && !m_Velocities.ContainsKey(b_RB))
+                        m_Velocities.Add(b_RB, b_RB.velocity);
                     //-----------------------------------------------------------------
                     //Friere ein
                     //-----------------------------------------------------------------

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-class Canon : MonoBehaviour, IPointerDownHandler
+class Cannon : MonoBehaviour, IPointerDownHandler
 {
     #region Declarations
 

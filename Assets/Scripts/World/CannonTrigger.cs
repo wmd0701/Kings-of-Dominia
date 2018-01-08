@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CanonTrigger : MonoBehaviour
+public class CannonTrigger : MonoBehaviour
 {
     private void OnCollisionEnter(Collision pi_Collision)
     {
@@ -12,7 +12,7 @@ public class CanonTrigger : MonoBehaviour
             //------------------------------------------------------
             //Feuere die Kanone ab
             //------------------------------------------------------
-            gameObject.GetComponentInParent<Canon>().Shoot();
+            gameObject.GetComponentInParent<Cannon>().Shoot();
         }
     }
 }

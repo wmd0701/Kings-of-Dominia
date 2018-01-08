@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 23780827624093472}
   - component: {fileID: 65963035983073980}
   m_Layer: 0
-  m_Name: Arch
+  m_Name: arch
   m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
