@@ -549,12 +549,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b3d5b5916537414b841a6038ac4faec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CanonDominoContact: {fileID: 0}
-  m_MenuClose: {fileID: 0}
-  m_MenuOpen: {fileID: 0}
-  m_DominoFall: {fileID: 0}
-  m_DominoSetting: {fileID: 0}
-  m_CanonShots: []
+  m_CanonDominoContact: {fileID: 8300000, guid: 84fb3625d47de974f9f564098e67f378,
+    type: 3}
+  m_MenuClose: {fileID: 8300000, guid: 890e7a60dec8b464fbc02d3f8f92f7ca, type: 3}
+  m_MenuOpen: {fileID: 8300000, guid: 2f583458638a674479e29eb73c30dec8, type: 3}
+  m_DominoFall: {fileID: 8300000, guid: 5224b94c6d20295468030fdd076497a2, type: 3}
+  m_DominoSetting: {fileID: 8300000, guid: d8d4ce1caa9d10248b2e3362c5f638ab, type: 3}
+  m_CanonShots:
+  - {fileID: 8300000, guid: 07e3594aec900074ca28bd7418d74a67, type: 3}
 --- !u!4 &1124733575 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4731297701090050, guid: 0f57ed41ad7d9c54aae48978296f2026,

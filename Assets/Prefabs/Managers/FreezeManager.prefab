@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4292717935659374}
   - component: {fileID: 114573782072295170}
+  - component: {fileID: 114383227916224076}
   m_Layer: 0
   m_Name: FreezeManager
   m_TagString: Untagged
@@ -40,6 +41,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114383227916224076
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1340503453108946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b3d5b5916537414b841a6038ac4faec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CanonDominoContact: {fileID: 8300000, guid: 84fb3625d47de974f9f564098e67f378,
+    type: 3}
+  m_MenuClose: {fileID: 8300000, guid: 890e7a60dec8b464fbc02d3f8f92f7ca, type: 3}
+  m_MenuOpen: {fileID: 8300000, guid: 2f583458638a674479e29eb73c30dec8, type: 3}
+  m_DominoFall: {fileID: 8300000, guid: 5224b94c6d20295468030fdd076497a2, type: 3}
+  m_DominoSetting: {fileID: 8300000, guid: d8d4ce1caa9d10248b2e3362c5f638ab, type: 3}
+  m_CanonShots:
+  - {fileID: 8300000, guid: 07e3594aec900074ca28bd7418d74a67, type: 3}
 --- !u!114 &114573782072295170
 MonoBehaviour:
   m_ObjectHideFlags: 1

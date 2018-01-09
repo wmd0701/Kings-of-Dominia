@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 23117981509477398}
   - component: {fileID: 65584373485369208}
   - component: {fileID: 54032304644598332}
+  - component: {fileID: 114168508462024102}
   m_Layer: 9
   m_Name: dominoIce
   m_TagString: DominoIce
@@ -111,3 +112,14 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.01, y: 0.0019999999, z: 0.019999996}
   m_Center: {x: 0, y: 0, z: 0.01}
+--- !u!114 &114168508462024102
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1968351117815174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58f65387e2e899a47afa0ec7cf1df511, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

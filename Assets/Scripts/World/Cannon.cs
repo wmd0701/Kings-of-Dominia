@@ -185,6 +185,10 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //------------------------------------------------------
             FreezeManager.Instance.RegisterRB(l_Ball.GetComponent<Rigidbody>());
             //------------------------------------------------------
+            //Spiele passenden Sound
+            //------------------------------------------------------
+            SoundEffectManager.Instance.PlayCanonShot();
+            //------------------------------------------------------
             //Reduziere Anzahl der Schüsse
             //------------------------------------------------------
             m_ShotCount--;
