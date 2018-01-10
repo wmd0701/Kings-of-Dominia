@@ -22,7 +22,9 @@ GameObject:
   - component: {fileID: 33639823890140800}
   - component: {fileID: 23780827624093472}
   - component: {fileID: 65963035983073980}
-  m_Layer: 0
+  - component: {fileID: 65522174798518700}
+  - component: {fileID: 65128166846632672}
+  m_Layer: 8
   m_Name: arch
   m_TagString: Terrain
   m_Icon: {fileID: 0}
@@ -83,6 +85,30 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1701235496037442}
   m_Mesh: {fileID: 4300000, guid: 9ab65d9748d3a2141b545f140296c264, type: 3}
+--- !u!65 &65128166846632672
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1701235496037442}
+  m_Material: {fileID: 13400000, guid: 71ac89f06eba0bf4b83f4653869cf802, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.16, y: 0.025000004, z: 0.025}
+  m_Center: {x: 0, y: 0, z: 0.0875}
+--- !u!65 &65522174798518700
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1701235496037442}
+  m_Material: {fileID: 13400000, guid: 71ac89f06eba0bf4b83f4653869cf802, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.02, y: 0.025000004, z: 0.10000002}
+  m_Center: {x: 0.07, y: 0, z: 0.05}
 --- !u!65 &65963035983073980
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -93,5 +119,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.16, y: 0.025, z: 0.1}
-  m_Center: {x: 0, y: 0, z: 0.05}
+  m_Size: {x: 0.02, y: 0.025, z: 0.1}
+  m_Center: {x: -0.07, y: 0, z: 0.05}

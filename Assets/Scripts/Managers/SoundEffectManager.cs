@@ -15,10 +15,20 @@ public class SoundEffectManager : MonoBehaviour
 
 	private void Awake()
 	{
-		if (Instance == null)
-			Instance = this;
+        //-----------------------------------------------------------------
+        //Erstelle eine Instanz falls nicht vorhanden
+        //-----------------------------------------------------------------
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        //-----------------------------------------------------------------
+        //..Oder lösche falls diese Instanz nicht die Instanz ist
+        //-----------------------------------------------------------------
+        else if (Instance != this)
+            Destroy(this);
 
-		myAudioSources = new AudioSource[1];
+        myAudioSources = new AudioSource[1];
 
 		GameObject l_NewSource = new GameObject("AddedSource");
 		SoundUtilities.AddAudioListener(l_NewSource, false, 1.0f, false);

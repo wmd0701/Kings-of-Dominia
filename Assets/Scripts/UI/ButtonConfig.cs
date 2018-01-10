@@ -18,15 +18,14 @@ public class ButtonConfig : MonoBehaviour{
     private void Awake()
     {
         //------------------------------------------------------
-        //Setzte Text auf nichts, hole Image
+        //Hole Hintergrundbild
         //------------------------------------------------------
-        gameObject.GetComponentInChildren<Text>().text = "";
         m_Button = gameObject.GetComponent<Image>();
         m_Button.color = m_NotActive;
     }
 
     /// <summary>
-    /// Wechselt Farbe zw Rot und Weiß
+    /// Wechselt Farbe zwischen Rot und Weiß
     /// </summary>
     public void ChangeColor()
     {

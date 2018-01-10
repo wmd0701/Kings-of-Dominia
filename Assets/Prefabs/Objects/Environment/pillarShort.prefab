@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33052619306531694}
   - component: {fileID: 23871518140905628}
   - component: {fileID: 136472502917438168}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: pillarShort
   m_TagString: Terrain
   m_Icon: {fileID: 0}

@@ -10,6 +10,8 @@ TagManager:
   - DominoLong
   - DominoStandart
   - Gate
+  - Start
+  - Goal
   layers:
   - Default
   - TransparentFX

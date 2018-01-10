@@ -31,7 +31,8 @@ public class Trigger : MonoBehaviour
     {
         None,
         Cannon,
-        Gate
+        Gate,
+        Goal
     }
     
     private void OnCollisionEnter(Collision pi_Collision)
@@ -63,6 +64,9 @@ public class Trigger : MonoBehaviour
                     //Feuere die Kanone ab
                     //------------------------------------------------------
                     gameObject.GetComponentInParent<Cannon>().Shoot();
+                    break;
+                case TriggerType.Goal:
+                    UIManager.Instance.ShowWin();
                     break;
             }
         }

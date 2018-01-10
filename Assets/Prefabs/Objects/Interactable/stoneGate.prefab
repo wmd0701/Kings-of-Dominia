@@ -19,9 +19,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4132603798644548}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GateMesh
-  m_TagString: Untagged
+  m_TagString: Gate
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 65709271515921548}
   - component: {fileID: 65686774466917294}
   - component: {fileID: 114816116799869036}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: stoneGate
   m_TagString: Gate
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 33938433820922166}
   - component: {fileID: 23341237481906408}
   - component: {fileID: 65761148965202834}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gate
   m_TagString: Gate
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 4912071327632320}
   - component: {fileID: 33682267153536516}
   - component: {fileID: 23180295886341224}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Arch
   m_TagString: Gate
   m_Icon: {fileID: 0}

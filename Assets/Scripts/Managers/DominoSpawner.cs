@@ -113,9 +113,9 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 if(!FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")) && !m_CancelTouch)
                 {
                     //------------------------------------------------------
-                    //..Wende entweder Force auf Rigidbody des Hits an
+                    //..Versuche Stein anzustoßen
                     //------------------------------------------------------
-                    l_Hit.transform.GetComponent<Rigidbody>().AddForceAtPosition(l_Ray.direction, l_Hit.point, ForceMode.Impulse);
+                    l_Hit.transform.GetComponent<Domino>().Flip(l_Ray.direction, l_Hit.point);
                 }
                 //------------------------------------------------------
                 //Falls im Editmode und Domino getroffen wurde..
