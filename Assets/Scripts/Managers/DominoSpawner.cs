@@ -68,6 +68,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     //Um Änderungen rückgängig zu machen
     //------------------------------------------------------
     Stack<DominoChange> m_Changes = new Stack<DominoChange>();
+    //------------------------------------------------------
+    //Abbruchkriterium für aktuellen Touch
+    //------------------------------------------------------
+    private bool m_CancelTouch;
 
     #endregion
 
@@ -95,13 +99,18 @@ public class DominoSpawner : MonoBehaviour, UndoChange
             {
                 RaycastHit l_Hit;
                 //------------------------------------------------------
+                //Bei Beginn setzten Abbruchkriterium zurück
+                //------------------------------------------------------
+                if (Input.GetTouch(0).phase == TouchPhase.Began)
+                    m_CancelTouch = false;
+                //------------------------------------------------------
                 //Erstelle Ray durch die Kamera basierend auf dem Touch
                 //------------------------------------------------------
                 Ray l_Ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
                 //------------------------------------------------------
                 //Falls nicht im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
-                if(!FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
+                if(!FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")) && !m_CancelTouch)
                 {
                     //------------------------------------------------------
                     //..Wende entweder Force auf Rigidbody des Hits an
@@ -111,7 +120,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
+                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")) && !m_CancelTouch)
                 {
                     //------------------------------------------------------
                     //Ändere nur falls es ein normaler Domino ist
@@ -119,8 +128,9 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     if (l_Hit.transform.tag == "DominoStandart")                    
                     {
 
-
-
+                        //-----------------------------------------------------------
+                        //GUI Code
+                        //-----------------------------------------------------------
 
                         //-----------------------------------------------------------
                         //Finde Eis Domino
@@ -139,9 +149,65 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     }
                 }
                 //------------------------------------------------------
+                //Falls im Editmode und ein Trigger getroffen..
+                //------------------------------------------------------
+                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Trigger")) && !m_CancelTouch)
+                {
+                    //------------------------------------------------------
+                    //Hole Ecken des Triggers (angeordnet in CCW)
+                    //------------------------------------------------------
+                    Transform[] l_TriggerCorners = l_Hit.transform.GetComponentInChildren<Trigger>().Corners;
+                    //------------------------------------------------------
+                    //Gehe durch die Ecken
+                    //------------------------------------------------------
+                    for (int i = 0; i < l_TriggerCorners.Length; i++)
+                    {
+                        //-------------------------------------------------------------
+                        //Bestimme Linie 1 (Touch außerhalb und innerhalb des Triggers)
+                        //-------------------------------------------------------------
+                        Vector3 l_Line1_2 = l_Hit.point;
+                        Vector3 l_Line1_1 = m_Spawner.GetPosition(m_Spawner.positionCount - 1);
+                        //------------------------------------------------------
+                        //Bestimme Linie 2 (aktuelle Kante)
+                        //------------------------------------------------------
+                        Vector3 l_Line2_1 = l_TriggerCorners[i].position;
+                        Vector3 l_Line2_2 = l_TriggerCorners[i < l_TriggerCorners.Length - 1 ? i + 1 : 0].position;
+                        //------------------------------------------------------
+                        //Überprüfe ob diese Kante geschnitten wurde
+                        //------------------------------------------------------
+                        if (Intersect(l_Line1_1, l_Line1_2, l_Line2_1, l_Line2_2))
+                        {
+                            //------------------------------------------------------
+                            //Falls dem so ist bestimme Mittelpunkt
+                            //------------------------------------------------------
+                            Vector3 l_TriggerStone = (l_Line2_1 + l_Line2_2) / 2.0f;
+                            //------------------------------------------------------
+                            //Füge als Spawnpunkt hinzu
+                            //------------------------------------------------------
+                            m_Spawner.positionCount++;
+                            m_Spawner.SetPosition(m_Spawner.positionCount - 1, l_TriggerStone);
+                            //------------------------------------------------------
+                            //Spawne Dominos und setzte Spawner zurück
+                            //------------------------------------------------------
+                            Vector3[] l_Positions = new Vector3[m_Spawner.positionCount];
+                            m_Spawner.GetPositions(l_Positions);
+                            SpawnDominos(l_Positions);
+                            m_Spawner.positionCount = 0;
+                            //------------------------------------------------------
+                            //Breche Touch ab
+                            //------------------------------------------------------
+                            m_CancelTouch = true;
+                            //------------------------------------------------------
+                            //Verlasse Schleife
+                            //------------------------------------------------------
+                            break;
+                        }
+                    }
+                }
+                //------------------------------------------------------
                 //Falls im Editmode und das Level getroffen wurde..
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
+                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")) && !m_CancelTouch)
                 {
                     //------------------------------------------------------
                     //..Speichere Hit im Spawnarray falls auf "Nullebene"
@@ -163,6 +229,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                         m_Spawner.GetPositions(l_Positions);
                         SpawnDominos(l_Positions);
                         m_Spawner.positionCount = 0;
+                        //------------------------------------------------------
+                        //Breche Touch ab
+                        //------------------------------------------------------
+                        m_CancelTouch = true;
                     }
                 }
             }
@@ -230,6 +300,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 }
             }
             //------------------------------------------------------
+            //Füge letzten aufgezeichneten Punkt zwangsläufig ein
+            //------------------------------------------------------
+            l_WorkingPositions.Add(pi_Positions[pi_Positions.Length - 1]);
+            //------------------------------------------------------
             //Liste mit interpolierten Zwischenpunkten
             //------------------------------------------------------
             List<Vector3> l_InterpolatedPositions = new List<Vector3>();
@@ -249,7 +323,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 {
                     l_InterpolatedPositions.Add(l_WorkingPositions[i] + ((l_Diff / (l_Diff.magnitude / m_DominoDistance)) * j));
                 }
-            }
+            }            
             //---------------------------------------------------------
             //Wenn es mindestens eine Position gibt bestimme Rotationen
             //---------------------------------------------------------
@@ -299,7 +373,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //Füge RB zum Manager hinzu und GameObject ins Array
                     //-----------------------------------------------------------------
                     l_Spawned[i] = Instantiate(Domino, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
-                    FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());
+                    FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());                    
                 }
                 //-----------------------------------------------------------
                 //Speicher Änderung
@@ -378,5 +452,79 @@ public class DominoSpawner : MonoBehaviour, UndoChange
             }
         }
     }
+
+    /// <summary>
+    /// Bestimmt ob sich zwei Linien schneiden
+    /// </summary>
+    /// <param name="pi_Line1_1">Linie 1 Punkt 1</param>
+    /// <param name="pi_Line1_2">Linie 1 Punkt 2</param>
+    /// <param name="pi_Line2_1">Linie 2 Punkt 1</param>
+    /// <param name="pi_Line2_2">Linie 2 Punkt 2</param>
+    /// <returns>Bool ob Schnitt</returns>
+    private bool Intersect(Vector3 pi_Line1_1, Vector3 pi_Line1_2,
+                           Vector3 pi_Line2_1, Vector3 pi_Line2_2)
+    {
+        //-----------------------------------------------------------
+        //Falls die Kombinationen CCW abgelaufen werden können
+        //dann schneiden sich die Strecken, ansonsten eben nicht
+        //-----------------------------------------------------------
+        return ((CounterClockWise(pi_Line1_1, pi_Line1_2, pi_Line2_1) * CounterClockWise(pi_Line1_1, pi_Line1_2, pi_Line2_2)) <= 0 &&
+                (CounterClockWise(pi_Line2_1, pi_Line2_2, pi_Line1_1) * CounterClockWise(pi_Line2_1, pi_Line2_2, pi_Line1_2)) <= 0);
+    }
+
+    /// <summary>
+    /// Bestimmt in welche Richtung (CW, CCW) das Ablaufen der drei Punkte geschieht
+    /// </summary>
+    /// <param name="pi_Point0">Punkt 1</param>
+    /// <param name="pi_Point1">Punkt 2</param>
+    /// <param name="pi_Point2">Punkt 3</param>
+    /// <returns>1 falls CCW, 0 falls unentschieden, -1 falls CW</returns>
+    private int CounterClockWise(Vector3 pi_Point0, Vector3 pi_Point1, Vector3 pi_Point2)
+    {
+        //-----------------------------------------------------------
+        //Bestimme Unterschied zw. Punkt 0/1 und 0/2
+        //-----------------------------------------------------------
+        float l_MagX1 = pi_Point1.x - pi_Point0.x;
+        float l_MagZ1 = pi_Point1.z - pi_Point0.z;
+        float l_MagX2 = pi_Point2.x - pi_Point0.x;
+        float l_MagZ2 = pi_Point2.z - pi_Point0.z;
+        //-----------------------------------------------------------
+        //Steigung nach Point 1 größer als nach Point 2 -> CCW
+        //-----------------------------------------------------------
+        if (l_MagX1 * l_MagZ2 > l_MagZ1 * l_MagX2)
+            return 1;
+        //-----------------------------------------------------------
+        //Steigung nach Point 1 kleiner als nach Point 2 -> CW
+        //-----------------------------------------------------------
+        else if (l_MagX1 * l_MagZ2 < l_MagZ1 * l_MagX2)
+            return -1;
+        //-----------------------------------------------------------
+        //Noch nicht eindeutig (Strecken aufeinander)..
+        //-----------------------------------------------------------
+        else if (l_MagX1 * l_MagZ2 == l_MagZ1 * l_MagX2)
+        {
+            //-----------------------------------------------------------
+            //Point 0 liegt zwischen Point 1 und Point 2 -> CW
+            //-----------------------------------------------------------
+            if (l_MagX1 * l_MagX2 < 0 || l_MagZ1 * l_MagZ2 < 0)
+                return -1;
+            //-----------------------------------------------------------
+            //Point 2 liegt zwischen Point 1 und Point 2 -> Spezialfall
+            //-----------------------------------------------------------
+            else if ((l_MagX1 * l_MagX1 + l_MagZ1 * l_MagZ1) >= (l_MagX2 * l_MagX2 + l_MagZ2 * l_MagZ2))
+                return 0;
+            //-----------------------------------------------------------
+            //Ansonsten Point 1 zwischen Point 0 und Point 2 -> CCW
+            //-----------------------------------------------------------
+            else
+                return 1;
+        }
+        //-----------------------------------------------------------
+        //Ansonsten CCW
+        //-----------------------------------------------------------
+        else
+            return 1;
+    }
+
     #endregion
 }

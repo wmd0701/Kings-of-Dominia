@@ -12,12 +12,12 @@ public class Gate : MonoBehaviour {
     //Position im geschlossenen Zustand
     //------------------------------------------------------
     [SerializeField]
-    private Transform m_Closed;
+    private Vector3 m_Closed;
     //------------------------------------------------------
     //Position im geöffneten Zustand
     //------------------------------------------------------
     [SerializeField]
-    private Transform m_Opened;
+    private Vector3 m_Opened;
     //------------------------------------------------------
     //Geschwindigkeit mit der sich das Tor öffnet
     //------------------------------------------------------
@@ -63,8 +63,8 @@ public class Gate : MonoBehaviour {
         //------------------------------------------------------
         //Limitiere Bewegung
         //------------------------------------------------------
-        while (pi_Direction == GateStatus.Open ? m_Gate.transform.position.y > m_Opened.position.y :
-                                                 m_Gate.transform.position.y < m_Closed.position.y)
+        while (pi_Direction == GateStatus.Open ? m_Gate.transform.position.y > m_Opened.y :
+                                                 m_Gate.transform.position.y < m_Closed.y)
         {
             //------------------------------------------------------
             //Nur falls nicht im Editmodus
