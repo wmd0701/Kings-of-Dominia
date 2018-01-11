@@ -10,6 +10,9 @@ public class SoundEffectManager : MonoBehaviour
 	[SerializeField] private AudioClip m_DominoFall;
 	[SerializeField] private AudioClip m_DominoSetting;
 	[SerializeField] private AudioClip[] m_CanonShots;
+	[SerializeField] private AudioClip m_GateClose;
+	[SerializeField] private AudioClip m_GateOpen;
+	[SerializeField] private AudioClip m_Schalter;
 
 	private AudioSource[] myAudioSources;
 
@@ -64,6 +67,21 @@ public class SoundEffectManager : MonoBehaviour
 	public void PlayCanonShot()
 	{
 		PlayRandomSound(m_CanonShots);
+	}
+
+	public void PlayGateClose()
+	{
+		PlaySound(m_GateClose);
+	}
+
+	public void PlayGateOpen()
+	{
+		PlaySound(m_GateOpen);
+	}
+
+	public void PlaySchalter()
+	{
+		PlaySound(m_Schalter);
 	}
 
 	private void PlaySound(AudioClip clip)
