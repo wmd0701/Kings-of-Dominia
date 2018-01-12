@@ -187,7 +187,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //------------------------------------------------------
             //Spiele passenden Sound
             //------------------------------------------------------
-            SoundEffectManager.Instance.PlayCanonShot();
+            SoundEffectManager.Instance.PlayCannonShot();
             //------------------------------------------------------
             //Reduziere Anzahl der Schüsse
             //------------------------------------------------------

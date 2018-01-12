@@ -167,7 +167,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4634658310253024}
   m_Layer: 0
-  m_Name: Cannon Mesh
+  m_Name: CannonMesh
   m_TagString: Canon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

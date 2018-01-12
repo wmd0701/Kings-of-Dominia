@@ -115,7 +115,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //------------------------------------------------------
                     //..Versuche Stein anzustoßen
                     //------------------------------------------------------
-                    l_Hit.transform.GetComponent<Domino>().Flip(l_Ray.direction, l_Hit.point);
+                    l_Hit.transform.GetComponent<Domino>().TryFlip(l_Ray.direction, l_Hit.point);
                 }
                 //------------------------------------------------------
                 //Falls im Editmode und Domino getroffen wurde..
@@ -146,6 +146,17 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                         //Speichere den Change
                         //------------------------------------------------------
                         SaveLastChange(new DominoChange(new GameObject[] { l_Hit.transform.gameObject }, DominoChange.enRestoreMode.Replace));
+                    }
+                    //--------------------------------------------------------------
+                    //Ansonsten falls der Startstein/Endstein getroffen wurde spawne
+                    //--------------------------------------------------------------
+                    else if (l_Hit.transform.tag == "Start" || l_Hit.transform.tag == "Goal")
+                    {
+                        SpawnDominos();
+                        //------------------------------------------------------
+                        //Breche Touch ab
+                        //------------------------------------------------------
+                        m_CancelTouch = true;
                     }
                 }
                 //------------------------------------------------------
@@ -187,12 +198,9 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                             m_Spawner.positionCount++;
                             m_Spawner.SetPosition(m_Spawner.positionCount - 1, l_TriggerStone);
                             //------------------------------------------------------
-                            //Spawne Dominos und setzte Spawner zurück
+                            //Spawne Dominos
                             //------------------------------------------------------
-                            Vector3[] l_Positions = new Vector3[m_Spawner.positionCount];
-                            m_Spawner.GetPositions(l_Positions);
-                            SpawnDominos(l_Positions);
-                            m_Spawner.positionCount = 0;
+                            SpawnDominos();
                             //------------------------------------------------------
                             //Breche Touch ab
                             //------------------------------------------------------
@@ -221,14 +229,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //..Oder spawne Dominos
                     //------------------------------------------------------
                     else
-                    {
-                        //------------------------------------------------------
-                        //Spawne Dominos und setzte Spawner zurück
-                        //------------------------------------------------------
-                        Vector3[] l_Positions = new Vector3[m_Spawner.positionCount];
-                        m_Spawner.GetPositions(l_Positions);
-                        SpawnDominos(l_Positions);
-                        m_Spawner.positionCount = 0;
+                    {                       
+                        SpawnDominos();
                         //------------------------------------------------------
                         //Breche Touch ab
                         //------------------------------------------------------
@@ -242,13 +244,21 @@ public class DominoSpawner : MonoBehaviour, UndoChange
             if (Input.GetTouch(0).phase == TouchPhase.Ended)
             {
                 //------------------------------------------------------
-                //Spawne Dominos und setzte Spawner zurück
+                //Spawne Dominos
                 //------------------------------------------------------
-                Vector3[] l_Positions = new Vector3[m_Spawner.positionCount];
-                m_Spawner.GetPositions(l_Positions);
-                SpawnDominos(l_Positions);
-                m_Spawner.positionCount = 0;
+                SpawnDominos();
             }
+        }
+        //------------------------------------------------------
+        //Bei mehr Touches..
+        //------------------------------------------------------
+        else
+        {
+            //------------------------------------------------------
+            //..Breche Touch ab und lösche ggf. Eingabe
+            //------------------------------------------------------
+            m_Spawner.positionCount = 0;
+            m_CancelTouch = true;
         }
     }
 
@@ -259,9 +269,20 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     /// <summary>
     /// Spawne Dominos basierend auf Koordinaten
     /// </summary>
-    /// <param name="pi_Positions">Koordinatenarray</param>
-    private void SpawnDominos(Vector3 [] pi_Positions)
+    private void SpawnDominos()
     {
+        //------------------------------------------------------
+        //Erstelle Array für Positionen
+        //------------------------------------------------------
+        Vector3[] l_Positions = new Vector3[m_Spawner.positionCount];
+        //------------------------------------------------------
+        //Hole Positionen
+        //------------------------------------------------------
+        m_Spawner.GetPositions(l_Positions);
+        //------------------------------------------------------
+        //Setzte LineRenderer zurück
+        //------------------------------------------------------
+        m_Spawner.positionCount = 0;
         //------------------------------------------------------
         //Erstelle Listen für plausible Positionen..
         //------------------------------------------------------
@@ -273,27 +294,27 @@ public class DominoSpawner : MonoBehaviour, UndoChange
         //------------------------------------------------------
         //Falls es mindestens zwei Positionen gibt..
         //------------------------------------------------------
-        if (pi_Positions.Length > 1)
+        if (l_Positions.Length > 1)
         {
             //------------------------------------------------------
             //Gehe durch die Positionen
             //------------------------------------------------------
-            for (int i = 0; i < pi_Positions.Length - 1; i++)
+            for (int i = 0; i < l_Positions.Length - 1; i++)
             {
                 //------------------------------------------------------
                 //Und durch die Punkte ab dem aktuellen Punkt
                 //------------------------------------------------------
-                for (int j = i + 1; j < pi_Positions.Length - 1; j++)
+                for (int j = i + 1; j < l_Positions.Length - 1; j++)
                 {
                     //------------------------------------------------------
                     //Wenn die Distanz stimmt
                     //------------------------------------------------------
-                    if ((pi_Positions[j] - pi_Positions[i]).magnitude > m_DominoDistance)
+                    if ((l_Positions[j] - l_Positions[i]).magnitude > m_DominoDistance)
                     {
                         //----------------------------------------------------------
                         //Füge in die Liste ein und ändere Zähler, verlasse Schleife
                         //----------------------------------------------------------
-                        l_WorkingPositions.Add(pi_Positions[i]);
+                        l_WorkingPositions.Add(l_Positions[i]);
                         i = j;
                         break;
                     }
@@ -302,7 +323,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
             //------------------------------------------------------
             //Füge letzten aufgezeichneten Punkt zwangsläufig ein
             //------------------------------------------------------
-            l_WorkingPositions.Add(pi_Positions[pi_Positions.Length - 1]);
+            l_WorkingPositions.Add(l_Positions[l_Positions.Length - 1]);
             //------------------------------------------------------
             //Liste mit interpolierten Zwischenpunkten
             //------------------------------------------------------

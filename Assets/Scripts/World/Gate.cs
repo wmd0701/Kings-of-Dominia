@@ -26,7 +26,7 @@ public class Gate : MonoBehaviour {
     //------------------------------------------------------
     //Aktueller Torstatus
     //------------------------------------------------------
-    private GateStatus m_Current = GateStatus.None;
+    private GateStatus m_Current = GateStatus.Close;
     
     /// <summary>
     /// Mögliche Torpositionen
@@ -43,7 +43,20 @@ public class Gate : MonoBehaviour {
     /// </summary>
     public void OpenGate()
     {
-        StartCoroutine(MoveGate(GateStatus.Open));
+        //------------------------------------------------------
+        //Tor muss geschlossen sein
+        //------------------------------------------------------
+        if (m_Current == GateStatus.Close)
+        {
+            //------------------------------------------------------
+            //Öffne Tor
+            //------------------------------------------------------
+            StartCoroutine(MoveGate(GateStatus.Open));
+            //------------------------------------------------------
+            //Spiele Soundeffekt ab
+            //------------------------------------------------------
+            SoundEffectManager.Instance.PlayGateOpen();
+        }
     }
 
     /// <summary>
@@ -51,7 +64,20 @@ public class Gate : MonoBehaviour {
     /// </summary>
     public void CloseGate()
     {
-        StartCoroutine(MoveGate(GateStatus.Close));
+        //------------------------------------------------------
+        //Tor muss offen sein
+        //------------------------------------------------------
+        if (m_Current == GateStatus.Open)
+        {
+            //------------------------------------------------------
+            //Schließe Tor
+            //------------------------------------------------------
+            StartCoroutine(MoveGate(GateStatus.Close));
+            //------------------------------------------------------
+            //Spiele Soundeffekt ab
+            //------------------------------------------------------
+            SoundEffectManager.Instance.PlayGateClose();        
+        }
     }
 
     /// <summary>

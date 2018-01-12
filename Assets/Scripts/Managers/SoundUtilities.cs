@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
 
-public class SoundUtilities : MonoBehaviour {
-
+public class SoundUtilities : MonoBehaviour
+{
 	/// <summary>
-	/// Gets a random index for a given array
+	/// Zufälliger Index basierend auf Länge
 	/// </summary>
 	public static int GetRndIndex(int arrayLength)
 	{
@@ -12,7 +12,7 @@ public class SoundUtilities : MonoBehaviour {
 	} 
 
     /// <summary>
-    /// Get random rotation around y-axis
+    /// Zufällige Rotation um Y
     /// </summary>
 	public static Quaternion GetRndStandRotation()
 	{
@@ -20,7 +20,7 @@ public class SoundUtilities : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Plays a random clip from a given clip soundbank on a given AudioSource component
+	/// Spielt zufälligen Clip
 	/// </summary>
 	public static void PlayRandomSound(AudioSource source, AudioClip[] clips)
 	{
@@ -28,7 +28,7 @@ public class SoundUtilities : MonoBehaviour {
 		{
 			if (source != null)
 			{
-				source.clip = clips[SoundUtilities.GetRndIndex(clips.Length)];
+				source.clip = clips[GetRndIndex(clips.Length)];
 				source.Play();
 			}
 			else
@@ -44,10 +44,8 @@ public class SoundUtilities : MonoBehaviour {
 	}
 
     /// <summary>
-    /// Plays given sound on given source
+    /// Spielt einen Clip
     /// </summary>
-    /// <param name="source">Audiosource</param>
-    /// <param name="clip">Audioclip</param>
 	public static void PlaySound(AudioSource source, AudioClip clip)
 	{
 		if (source != null)
@@ -62,9 +60,8 @@ public class SoundUtilities : MonoBehaviour {
 	} 
 
     /// <summary>
-    /// Stops source from playing audio
+    /// Stoppt Clip
     /// </summary>
-    /// <param name="source">Audiosource</param>
 	public static void StopSound(AudioSource source)
 	{
 		if (source != null)
@@ -77,13 +74,11 @@ public class SoundUtilities : MonoBehaviour {
 		}
 	} 
 
-
-	/// <summary>
-	/// Gets the distance between two objects, set a the same height.
-	/// </summary>
+    /// <summary>
+    /// Gibt Distanz zwischen zwei Positionen
+    /// </summary>
 	public static float GetRelativeDistance(Vector3 position1, Vector3 position2)
 	{
-		// set the height of pos1 as for pos2
 		Vector3 relativePosition1 = new Vector3
 			(
 				position1.x,
@@ -94,10 +89,9 @@ public class SoundUtilities : MonoBehaviour {
 		return Vector3.Distance(relativePosition1, position2);
 	}
 
-	/// <summary>
-	/// Gets the angle in (0, 360) of the given vector to the X axis of the world coordinate
-	/// </summary>
-	/// <param name="vec1"></param>
+    /// <summary>
+    /// Gibt Winkel eines Vektors
+    /// </summary>
 	public static float GetAbsoluteAngle(Vector2 vec1)
 	{
 		float aCos = Mathf.Acos(vec1.x) / Mathf.PI;
@@ -109,14 +103,14 @@ public class SoundUtilities : MonoBehaviour {
 		return aCos * 180;
 	}
 
-	#region AddAudioListener Overrides
+    #region Add source overrides
 
     /// <summary>
-    /// Adds audio listener to a gameobject
+    /// Fügt AudioSource zu einem GameObject und gibt sie zurück
     /// </summary>
-    /// <param name="toGameObject">Gameobject</param>    
-	public static AudioSource AddAudioListener(GameObject toGameObject)
-	{
+    /// <param name="toGameObject">GameObject</param>
+    public static AudioSource AddSourceToObject(GameObject toGameObject)
+    {
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
 		aS.playOnAwake = false;
 		if (SoundEffectManager.Instance != null)
@@ -127,12 +121,12 @@ public class SoundUtilities : MonoBehaviour {
 	}
 
     /// <summary>
-    /// Adds audio listener to a gameobject
+    /// Fügt AudioSource zu einem GameObject und gibt sie zurück
     /// </summary>
-    /// <param name="toGameObject">Gameobject</param>
-    /// <param name="is3D">Bool if is for 3D sound</param>
-	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D)
-	{
+    /// <param name="toGameObject">GameObject</param>
+    /// <param name="is3D">Bool ob 3D Sound</param>
+	public static AudioSource AddSourceToObject(GameObject toGameObject, bool is3D)
+    {
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
 		aS.playOnAwake = false;
 		if (SoundEffectManager.Instance != null)
@@ -151,13 +145,13 @@ public class SoundUtilities : MonoBehaviour {
 	}
 
     /// <summary>
-    /// Adds audio listener to gameobject
+    /// Fügt AudioSource zu einem GameObject und gibt sie zurück
     /// </summary>
-    /// <param name="toGameObject">Gameobject</param>
-    /// <param name="is3D">Bool if is 3D sound</param>
-    /// <param name="volume">Volume</param>
-	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D, float volume)
-	{
+    /// <param name="toGameObject">GameObject</param>
+    /// <param name="is3D">Bool ob 3D Sound</param>
+    /// <param name="volume">Lautstärke</param>
+	public static AudioSource AddSourceToObject(GameObject toGameObject, bool is3D, float volume)
+    {
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
 		aS.playOnAwake = false;
 		if (SoundEffectManager.Instance != null)
@@ -177,14 +171,14 @@ public class SoundUtilities : MonoBehaviour {
 	}
 
     /// <summary>
-    /// Adds audio listener to gameobject
+    /// Fügt AudioSource zu einem GameObject und gibt sie zurück
     /// </summary>
-    /// <param name="toGameObject">Gameobject</param>
-    /// <param name="is3D">Bool if is 3D sound</param>
-    /// <param name="volume">Volume</param>
-    /// <param name="isLoop">Bool if is looping</param>
-	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D, float volume, bool isLoop)
-	{
+    /// <param name="toGameObject">GameObject</param>
+    /// <param name="is3D">Bool ob 3D Sound</param>
+    /// <param name="volume">Lautstärke</param>
+    /// <param name="isLoop">Bool ob loopend</param>
+	public static AudioSource AddSourceToObject(GameObject toGameObject, bool is3D, float volume, bool isLoop)
+    {
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
 		aS.playOnAwake = false;
 		if (SoundEffectManager.Instance != null)
@@ -205,14 +199,14 @@ public class SoundUtilities : MonoBehaviour {
 	}
 
     /// <summary>
-    /// Adds audio listener to gameobject
+    /// Fügt AudioSource zu einem GameObject und gibt sie zurück
     /// </summary>
-    /// <param name="toGameObject">Gameobject</param>
-    /// <param name="is3D">Bool if is 3D sound</param>
-    /// <param name="volume">Volume</param>
-    /// <param name="isLoop">Bool if is looping</param>
-    /// <param name="audioMixerGroup">Audiomixtergroup</param>
-	public static AudioSource AddAudioListener(GameObject toGameObject, bool is3D, float volume, bool isLoop, AudioMixerGroup audioMixerGroup)
+    /// <param name="toGameObject">GameObject</param>
+    /// <param name="is3D">Bool ob 3D Sound</param>
+    /// <param name="volume">Lautstärke</param>
+    /// <param name="isLoop">Bool ob loopend</param>
+    /// <param name="audioMixerGroup">Audiomixter Gruppe</param>
+	public static AudioSource AddSourceToObject(GameObject toGameObject, bool is3D, float volume, bool isLoop, AudioMixerGroup audioMixerGroup)
 	{
 		AudioSource aS = toGameObject.AddComponent<AudioSource>();
 		aS.playOnAwake = false;

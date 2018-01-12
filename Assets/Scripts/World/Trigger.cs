@@ -31,8 +31,7 @@ public class Trigger : MonoBehaviour
     {
         None,
         Cannon,
-        Gate,
-        Goal
+        Gate        
     }
     
     private void OnCollisionEnter(Collision pi_Collision)
@@ -65,10 +64,11 @@ public class Trigger : MonoBehaviour
                     //------------------------------------------------------
                     gameObject.GetComponentInParent<Cannon>().Shoot();
                     break;
-                case TriggerType.Goal:
-                    UIManager.Instance.ShowWin();
-                    break;
             }
+            //------------------------------------------------------
+            //Spiele Soundeffekt ab
+            //------------------------------------------------------
+            SoundEffectManager.Instance.PlayLeverContact();
         }
     }
 }
