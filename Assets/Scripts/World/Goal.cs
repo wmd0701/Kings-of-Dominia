@@ -2,6 +2,8 @@
 
 public class Goal : MonoBehaviour
 {
+    private bool m_GameOver;
+
     private void Start()
     {
         //------------------------------------------------------
@@ -10,13 +12,12 @@ public class Goal : MonoBehaviour
         FreezeManager.Instance.RegisterRB(GetComponent<Rigidbody>());
     }
 
-    private void OnCollisionEnter(Collision pi_Collision)
+    private void Update()
     {
         //------------------------------------------------------
-        //Falls ein Domino den Gegner König berührt
+        //Falls der Stein zu weit gekippt wurde
         //------------------------------------------------------
-        if (pi_Collision.transform.tag.Contains("Domino") ||
-            pi_Collision.transform.tag == "Canon")
+        if (Mathf.Abs(transform.rotation.eulerAngles.x) < 45.0f && !m_GameOver)
         {
             //------------------------------------------------------
             //Dann wird er fallen und das Level ist abgeschlossen
@@ -26,6 +27,10 @@ public class Goal : MonoBehaviour
             //Spiele passenden Soundeffekt
             //------------------------------------------------------
             SoundEffectManager.Instance.PlayWinSound();
+            //------------------------------------------------------
+            //Das Spiel ist vorbei
+            //------------------------------------------------------
+            m_GameOver = true;
         }
     }
 }

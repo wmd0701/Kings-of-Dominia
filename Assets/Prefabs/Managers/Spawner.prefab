@@ -57,7 +57,8 @@ MonoBehaviour:
   - {fileID: 1500317483525008, guid: f64c0b34ecb89b840a90359a7cd813f3, type: 2}
   - {fileID: 1220578396242024, guid: 9cf84d3efa4cd564d9d96298a4cc706c, type: 2}
   m_DominoDistance: 1
-  m_EpsilonSpawnHeight: 0.01
+  m_EpsilonHeightDiff: 0.01
+  m_HoldUntilUpgrade: 0.2
 --- !u!120 &120962958477384440
 LineRenderer:
   m_ObjectHideFlags: 1

@@ -87,5 +87,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fb359f60cad2df4ead9bc88727da247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_WinScreen: {fileID: 0}
-  m_Upgrade: {fileID: 0}
+  m_WinUI: {fileID: 0}
+  m_UpgradeUI: {fileID: 0}
+  m_Spawner: {fileID: 0}
