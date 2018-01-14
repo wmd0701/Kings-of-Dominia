@@ -16,7 +16,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
         public enum enRestoreMode
         {
             Destroy,
-            Replace
+            UpgradeIce,
+            UpgradeLong
         }
 
         /// <summary>
@@ -72,6 +73,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     //Abbruchkriterium für aktuellen Touch
     //------------------------------------------------------
     private bool m_CancelTouch;
+    //------------------------------------------------------
+    //Letztes ausgewählter Domino
+    //------------------------------------------------------
+    private GameObject m_LastSelected;
 
     #endregion
 
@@ -110,7 +115,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls nicht im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
-                if(!FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")) && !m_CancelTouch)
+                if(!FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
+                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
                     //..Versuche Stein anzustoßen
@@ -120,32 +126,26 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")) && !m_CancelTouch)
+                if (FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
+                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
                     //Ändere nur falls es ein normaler Domino ist
                     //------------------------------------------------------
                     if (l_Hit.transform.tag == "DominoStandart")                    
                     {
-
-                        //-----------------------------------------------------------
-                        //GUI Code
-                        //-----------------------------------------------------------
-
-                        //-----------------------------------------------------------
-                        //Finde Eis Domino
-                        //-----------------------------------------------------------
-                        GameObject IceDomino = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.gameObject.tag == "DominoIce");
                         //------------------------------------------------------
-                        //Passe Material und Physics-Material des Dominos an
+                        //Aktiviere Upgrade Menü
                         //------------------------------------------------------
-                        l_Hit.transform.GetComponent<MeshRenderer>().material = IceDomino.transform.GetComponent<MeshRenderer>().sharedMaterial;                        
-                        l_Hit.transform.GetComponent<MeshFilter>().mesh = IceDomino.transform.GetComponent<MeshFilter>().sharedMesh;
-                        l_Hit.transform.GetComponent<Collider>().material = IceDomino.transform.GetComponent<Collider>().sharedMaterial;
+                        UIManager.Instance.ShowUpgrade(true);
                         //------------------------------------------------------
-                        //Speichere den Change
+                        //Speichere GameObject
                         //------------------------------------------------------
-                        SaveLastChange(new DominoChange(new GameObject[] { l_Hit.transform.gameObject }, DominoChange.enRestoreMode.Replace));
+                        m_LastSelected = l_Hit.transform.gameObject;
+                        //------------------------------------------------------
+                        //Breche Touch ab
+                        //------------------------------------------------------
+                        m_CancelTouch = true;
                     }
                     //--------------------------------------------------------------
                     //Ansonsten falls der Startstein/Endstein getroffen wurde spawne
@@ -162,7 +162,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls im Editmode und ein Trigger getroffen..
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Trigger")) && !m_CancelTouch)
+                if (FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
+                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Trigger")))
                 {
                     //------------------------------------------------------
                     //Hole Ecken des Triggers (angeordnet in CCW)
@@ -215,7 +216,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls im Editmode und das Level getroffen wurde..
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")) && !m_CancelTouch)
+                if (FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
+                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
                 {
                     //------------------------------------------------------
                     //..Speichere Hit im Spawnarray falls auf "Nullebene"
@@ -265,6 +267,75 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     #endregion
 
     #region Procedures
+
+    /// <summary>
+    /// Upgradet zuletzt ausgewählten Stein
+    /// </summary>
+    /// <param name="pi_Type">Upgradetyp</param>
+    public void UpgradeDomino(Domino.DominoType pi_Type)
+    {
+        //------------------------------------------------------
+        //Falls ein Upgrade möglich ist
+        //------------------------------------------------------
+        if (m_LastSelected != null)
+        {
+            GameObject l_Replace;
+            //------------------------------------------------------
+            //Je nach Upgrade-Typ
+            //------------------------------------------------------
+            switch (pi_Type)
+            {
+                case Domino.DominoType.Ice:
+                    //------------------------------------------------------
+                    //Finde Eis Domino und instanziere ihn
+                    //------------------------------------------------------
+                    l_Replace = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.CompareTag("DominoIce"));
+                    l_Replace = Instantiate(l_Replace, m_LastSelected.transform.position, m_LastSelected.transform.rotation);
+                    //------------------------------------------------------
+                    //Speichere RB im Manager
+                    //------------------------------------------------------
+                    FreezeManager.Instance.RegisterRB(l_Replace.GetComponent<Rigidbody>());
+                    //------------------------------------------------------
+                    //Speichere den Change
+                    //------------------------------------------------------
+                    SaveLastChange(new DominoChange(new GameObject[] { l_Replace, m_LastSelected }, DominoChange.enRestoreMode.UpgradeIce));
+                    //------------------------------------------------------
+                    //Deaktivere normalen Domino
+                    //------------------------------------------------------
+                    m_LastSelected.SetActive(false);
+                    break;
+                case Domino.DominoType.Long:
+                    //------------------------------------------------------
+                    //Finde langen Domino und instanziere ihn
+                    //------------------------------------------------------
+                    l_Replace = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.CompareTag("DominoLong"));
+                    l_Replace = Instantiate(l_Replace, m_LastSelected.transform.position, m_LastSelected.transform.rotation);
+                    //------------------------------------------------------
+                    //Speichere RB im Manager
+                    //------------------------------------------------------
+                    FreezeManager.Instance.RegisterRB(l_Replace.GetComponent<Rigidbody>());
+                    //------------------------------------------------------
+                    //Speichere den Change
+                    //------------------------------------------------------
+                    SaveLastChange(new DominoChange(new GameObject[] { l_Replace, m_LastSelected }, DominoChange.enRestoreMode.UpgradeLong));
+                    //------------------------------------------------------
+                    //Deaktivere normalen Domino
+                    //------------------------------------------------------
+                    m_LastSelected.SetActive(false);
+                    break;
+                //------------------------------------------------------
+                //Fehler!
+                //------------------------------------------------------
+                default:
+                    Debug.LogError("Case not implemented (upgrade)");
+                    break;
+            }
+            //------------------------------------------------------
+            //Setzte Auswahl zurück
+            //------------------------------------------------------
+            m_LastSelected = null;
+        }
+    }
 
     /// <summary>
     /// Spawne Dominos basierend auf Koordinaten
@@ -384,7 +455,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //-----------------------------------------------------------
                 //Finde Standart Domino
                 //-----------------------------------------------------------
-                GameObject Domino = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.gameObject.tag == "DominoStandart");
+                GameObject l_Standart = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.gameObject.tag == "DominoStandart");
                 //-----------------------------------------------------------
                 //Spawne Steine mit entsprechenden Koordinaten und Rotationen
                 //-----------------------------------------------------------
@@ -393,7 +464,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //-----------------------------------------------------------------
                     //Füge RB zum Manager hinzu und GameObject ins Array
                     //-----------------------------------------------------------------
-                    l_Spawned[i] = Instantiate(Domino, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
+                    l_Spawned[i] = Instantiate(l_Standart, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
                     FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());                    
                 }
                 //-----------------------------------------------------------
@@ -438,36 +509,63 @@ public class DominoSpawner : MonoBehaviour, UndoChange
             //-----------------------------------------------------------
             //Gehe durch die geänderten Dominos
             //-----------------------------------------------------------
-            foreach (GameObject b_Domino in l_LastChange.m_ChangedDominos)
+            for(int i = 0; i < l_LastChange.m_ChangedDominos.Length; i++)
             {
                 //-----------------------------------------------------------
                 //Überspringe falls Domino nicht mehr existiert
                 //-----------------------------------------------------------
-                if (b_Domino == null)
+                if (l_LastChange.m_ChangedDominos[i] == null)
                     continue;
                 //-----------------------------------------------------------
                 //Je nach Modus
                 //-----------------------------------------------------------
                 switch (l_LastChange.m_Mode)
                 {
+                    //------------------------------------------------------
+                    //Entferne Reihe
+                    //------------------------------------------------------
                     case DominoChange.enRestoreMode.Destroy:
                         //-----------------------------------------------------------
                         //Entferne altes Objekt
                         //-----------------------------------------------------------
-                        FreezeManager.Instance.RemoveRB(b_Domino.GetComponent<Rigidbody>());
-                        Destroy(b_Domino);
+                        FreezeManager.Instance.RemoveRB(l_LastChange.m_ChangedDominos[i].GetComponent<Rigidbody>());
+                        Destroy(l_LastChange.m_ChangedDominos[i]);
                         break;
-                    case DominoChange.enRestoreMode.Replace:
-                        //-----------------------------------------------------------
-                        //Finde Standart Domino
-                        //-----------------------------------------------------------
-                        GameObject Domino = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.gameObject.tag == "DominoStandart");
+                    //------------------------------------------------------
+                    //Entferne Upgrade
+                    //------------------------------------------------------
+                    case DominoChange.enRestoreMode.UpgradeIce:
+                    case DominoChange.enRestoreMode.UpgradeLong:
                         //------------------------------------------------------
-                        //Wechsle Material und Physics-Material zurück
+                        //An Position Null ist der Upgradestein gespeichert..
                         //------------------------------------------------------
-                        b_Domino.GetComponent<MeshRenderer>().material = Domino.transform.GetComponent<MeshRenderer>().sharedMaterial;
-                        b_Domino.GetComponent<MeshFilter>().mesh = Domino.transform.GetComponent<MeshFilter>().sharedMesh;
-                        b_Domino.GetComponent<Collider>().material = Domino.transform.GetComponent<Collider>().sharedMaterial;
+                        if (i == 0)
+                        {
+                            //------------------------------------------------------
+                            //Entferne vom FreezeManager
+                            //------------------------------------------------------
+                            FreezeManager.Instance.RemoveRB(l_LastChange.m_ChangedDominos[i].GetComponent<Rigidbody>());
+                            //------------------------------------------------------
+                            //Und zerstöre den Stein
+                            //------------------------------------------------------
+                            Destroy(l_LastChange.m_ChangedDominos[i]);
+                        }
+                        else
+                        {
+                            //------------------------------------------------------
+                            //An Position Eins ist der alte Stein -> Reaktiviere
+                            //------------------------------------------------------
+                            l_LastChange.m_ChangedDominos[i].SetActive(true);
+                        }
+                        //------------------------------------------------------
+                        //Fertig
+                        //------------------------------------------------------
+                        break;
+                    //------------------------------------------------------
+                    //Fehler!
+                    //------------------------------------------------------
+                    default:
+                        Debug.LogError("Case not implemented (restore)");
                         break;
                 }
             }

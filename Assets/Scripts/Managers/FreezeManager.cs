@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class FreezeManager : MonoBehaviour {
+public class FreezeManager : MonoBehaviour
+{
     #region Declarations
 
     //-----------------------------------------------------------------
@@ -19,7 +20,7 @@ public class FreezeManager : MonoBehaviour {
     //-----------------------------------------------------------------
     //RBs aktiv oder nicht
     //-----------------------------------------------------------------
-    private bool m_Forzen;
+    private bool m_Frozen;
 
     #endregion
 
@@ -32,12 +33,18 @@ public class FreezeManager : MonoBehaviour {
     {
         get
         {
-            return m_Forzen;
+            return m_Frozen;
         }
         set
         {
-            m_Forzen = !m_Forzen;
-            SetRBStatus();
+            //-----------------------------------------------------------------
+            //Wechsle nur falls kein Overlay aktiv ist
+            //-----------------------------------------------------------------
+            if (!UIManager.Instance.UIActive)
+            {
+                m_Frozen = !m_Frozen;
+                SetRBStatus();
+            }
         }
     }
 

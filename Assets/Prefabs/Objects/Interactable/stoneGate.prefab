@@ -53,7 +53,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4961936195282362}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: Corner3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 23808935226288408}
   - component: {fileID: 65413722691150736}
   - component: {fileID: 114107490567753930}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: Trigger
   m_TagString: Terrain
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4231508161402558}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: Corner4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,7 +120,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4833602154974728}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: Corner1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,7 +152,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4360542610741692}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: Corner2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

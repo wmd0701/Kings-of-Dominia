@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class Gate : MonoBehaviour {
+public class Gate : MonoBehaviour
+{
     //------------------------------------------------------
     //Verweis auf das Fallgatter-GameObject
     //------------------------------------------------------

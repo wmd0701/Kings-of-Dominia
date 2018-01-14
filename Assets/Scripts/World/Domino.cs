@@ -1,11 +1,31 @@
 ﻿using UnityEngine;
 
-public class Domino : MonoBehaviour {
+public class Domino : MonoBehaviour
+{
     //------------------------------------------------------
     //Bool ob der Stein König und damit anstoßbar ist
     //------------------------------------------------------
     [SerializeField]
     private bool m_isKing;
+
+    /// <summary>
+    /// Verfügbare Dominotypen
+    /// </summary>
+    public enum DominoType
+    {
+        Normal,
+        Ice,
+        Long
+    }
+    
+    private void Start()
+    {
+        //------------------------------------------------------
+        //Auch Könige müssen sich registrieren
+        //------------------------------------------------------
+        if (m_isKing)
+            FreezeManager.Instance.RegisterRB(GetComponent<Rigidbody>());
+    }
 
     private void OnCollisionEnter(Collision pi_Collision)
     {

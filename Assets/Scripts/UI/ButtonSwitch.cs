@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonConfig : MonoBehaviour{
+public class ButtonSwitch : MonoBehaviour
+{
     //------------------------------------------------------
     //Referenz auf das Image
     //------------------------------------------------------
@@ -29,13 +30,19 @@ public class ButtonConfig : MonoBehaviour{
     /// </summary>
     public void ChangeColor()
     {
-        if(m_Button.color == m_NotActive)
+        //------------------------------------------------------
+        //Switche nur falls kein Overlay aktiv ist
+        //------------------------------------------------------
+        if (!UIManager.Instance.UIActive)
         {
-            m_Button.color = m_Active;
-        }
-        else
-        {
-            m_Button.color = m_NotActive;
+            if(m_Button.color == m_NotActive)
+            {
+                m_Button.color = m_Active;
+            }
+            else
+            {
+                m_Button.color = m_NotActive;
+            }
         }
     }
 }

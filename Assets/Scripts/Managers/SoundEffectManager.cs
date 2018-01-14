@@ -64,7 +64,7 @@ public class SoundEffectManager : MonoBehaviour
 
 	public void PlayCanonDominoContact()
 	{
-		PlaySound(m_CanonDominoContact);
+		PlaySound(m_CanonDominoContact, 1.0f, false);
 	}
 
 	public void PlayDominoFall()
@@ -72,7 +72,7 @@ public class SoundEffectManager : MonoBehaviour
 		PlaySound(m_DominoFall, 0.7f, false);
 	}
 
-	public void PlayDominoSetting()
+	public void PlayDominoSettings()
 	{
 		PlaySound(m_DominoSetting);
 	}

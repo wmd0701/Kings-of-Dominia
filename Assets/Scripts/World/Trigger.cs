@@ -39,7 +39,8 @@ public class Trigger : MonoBehaviour
         //------------------------------------------------------
         //Wenn ein Domino den Trigger berührt hat
         //------------------------------------------------------
-        if (pi_Collision.transform.tag.Contains("Domino"))
+        if (pi_Collision.transform.tag.Contains("Domino") ||
+            pi_Collision.transform.tag == "Start")
         {
             //------------------------------------------------------
             //Je nach Triggertyp..
