@@ -24,9 +24,9 @@ GameObject:
   - component: {fileID: 65963035983073980}
   - component: {fileID: 65522174798518700}
   - component: {fileID: 65128166846632672}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: arch
-  m_TagString: Terrain
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
