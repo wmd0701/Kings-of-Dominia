@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4383166256947438}
   m_Layer: 8
   m_Name: stairsSingle
-  m_TagString: Terrain
+  m_TagString: Stairs
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 23512940037506414}
   m_Layer: 8
   m_Name: StairsMesh
-  m_TagString: Terrain
+  m_TagString: Stairs
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

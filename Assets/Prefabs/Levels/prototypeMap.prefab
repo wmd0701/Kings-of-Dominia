@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 64881817405882150}
   m_Layer: 8
   m_Name: prototypeMap
-  m_TagString: Terrain
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 114775859520381790}
   m_Layer: 10
   m_Name: DeathZone
-  m_TagString: Terrain
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

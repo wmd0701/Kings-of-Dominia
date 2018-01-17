@@ -4,14 +4,19 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Terrain
-  - Canon
   - DominoIce
   - DominoLong
   - DominoStandart
   - Gate
   - Start
   - Goal
+  - Wall
+  - Floor
+  - Arch
+  - Pillar
+  - Cannon
+  - Trigger
+  - Stairs
   layers:
   - Default
   - TransparentFX

@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 114634621381472710}
   m_Layer: 11
   m_Name: Trigger
-  m_TagString: Terrain
+  m_TagString: Trigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 65845016930331570}
   m_Layer: 8
   m_Name: castleWall
-  m_TagString: Terrain
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -37,7 +37,7 @@ Transform:
   m_GameObject: {fileID: 1885617559825892}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 60, z: 100}
+  m_LocalScale: {x: 100, y: 40, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0

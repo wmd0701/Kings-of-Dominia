@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 136952356009733528}
   m_Layer: 8
   m_Name: pillarTall
-  m_TagString: Terrain
+  m_TagString: Pillar
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 114839707108465816}
   m_Layer: 11
   m_Name: Trigger
-  m_TagString: Terrain
+  m_TagString: Trigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 120569665111416122}
   m_Layer: 0
   m_Name: cannon
-  m_TagString: Canon
+  m_TagString: Cannon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 4914735687716182}
   m_Layer: 0
   m_Name: BallSpawn
-  m_TagString: Canon
+  m_TagString: Cannon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 4634658310253024}
   m_Layer: 0
   m_Name: CannonMesh
-  m_TagString: Canon
+  m_TagString: Cannon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
