@@ -662,7 +662,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 114189886422428484, guid: 0f57ed41ad7d9c54aae48978296f2026,
+          type: 2}
         m_MethodName: RestoreLastSave
         m_Mode: 1
         m_Arguments:

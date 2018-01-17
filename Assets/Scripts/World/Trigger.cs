@@ -37,10 +37,11 @@ public class Trigger : MonoBehaviour
     private void OnCollisionEnter(Collision pi_Collision)
     {
         //------------------------------------------------------
-        //Wenn ein Domino den Trigger berührt hat
+        //Wenn ein Domino/Kanonenkugel den Trigger berührt hat
         //------------------------------------------------------
         if (pi_Collision.transform.tag.Contains("Domino") ||
-            pi_Collision.transform.tag == "Start")
+            pi_Collision.transform.CompareTag("Start") ||
+            pi_Collision.transform.CompareTag("Cannon"))
         {
             //------------------------------------------------------
             //Je nach Triggertyp..
