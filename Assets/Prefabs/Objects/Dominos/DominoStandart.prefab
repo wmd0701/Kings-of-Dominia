@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 54239416020511208}
   - component: {fileID: 114294731892156320}
   m_Layer: 9
-  m_Name: dominoStandart
+  m_Name: DominoStandart
   m_TagString: DominoStandart
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,4 +123,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58f65387e2e899a47afa0ec7cf1df511, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_isKing: 0
+  m_Radius: 5
+  m_Power: 100
