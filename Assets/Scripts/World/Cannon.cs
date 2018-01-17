@@ -92,7 +92,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //------------------------------------------------------
         //Wenn im Edit-Mode
         //------------------------------------------------------
-        if (FreezeManager.Instance.Frozen)
+        if (UIManager.Instance.EditEnabled)
         {
             //------------------------------------------------------
             //Switche Kanonenkontrolle an/aus
@@ -106,7 +106,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //------------------------------------------------------
         //Schalte Kontrolle ggf. ab (und deaktivere Anzeige)
         //------------------------------------------------------
-        if (!FreezeManager.Instance.Frozen)
+        if (!UIManager.Instance.EditEnabled)
         {
             if (CanonControl)
                 CanonControl = !CanonControl;
@@ -180,10 +180,6 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //Gebe dem Projektil eine Geschwindigkeit
             //------------------------------------------------------            
             l_Ball.GetComponent<Rigidbody>().velocity = m_CanonSpawn.forward.normalized * m_ShotVelocity;
-            //------------------------------------------------------
-            //Registriere den RB des Schusses
-            //------------------------------------------------------
-            FreezeManager.Instance.RegisterRB(l_Ball.GetComponent<Rigidbody>());
             //------------------------------------------------------
             //Spiele passenden Sound
             //------------------------------------------------------

@@ -25,6 +25,10 @@ public class SoundEffectManager : MonoBehaviour
     //Liste mit Sources
     //------------------------------------------------------
     private List<AudioSource> m_AddedSources = new List<AudioSource>();
+    //------------------------------------------------------
+    //
+    //------------------------------------------------------
+    private AudioSource m_MustnPlay;
 
     private void Awake()
 	{
@@ -43,7 +47,7 @@ public class SoundEffectManager : MonoBehaviour
         //------------------------------------------------------
         //Füge eine Standartsource hinzu
         //------------------------------------------------------
-        m_AddedSources.Add(SoundUtilities.AddSourceToObject(gameObject, false, 1.0f, false));
+        m_MustnPlay = SoundUtilities.AddSourceToObject(gameObject, false, 1.0f, false);
         //------------------------------------------------------
         //Starte Cleanup Routine
         //------------------------------------------------------
@@ -113,6 +117,20 @@ public class SoundEffectManager : MonoBehaviour
     private void PlaySound(AudioClip pi_Clip, float pi_Volume = 1.0f, bool pi_HasToPlay = true)
     {
         //------------------------------------------------------
+        //Falls der Sound unterbrechen darf
+        //------------------------------------------------------
+        if (!pi_HasToPlay)
+        {
+            //------------------------------------------------------
+            //Spiele Sound auf der entsprechenden Quelle
+            //------------------------------------------------------
+            float l_OldVol = m_MustnPlay.volume;
+            m_MustnPlay.volume = pi_Volume;
+            SoundUtilities.PlaySound(m_MustnPlay, pi_Clip);
+            m_MustnPlay.volume = l_OldVol;
+            return;
+        }
+        //------------------------------------------------------
         //Versuche eine Source zu finden die nicht benutzt wird
         //------------------------------------------------------
         foreach (AudioSource b_Source in m_AddedSources)
@@ -130,19 +148,13 @@ public class SoundEffectManager : MonoBehaviour
             }
         }
         //------------------------------------------------------
-        //Falls der Sound wichtig ist
+        //Füge neue Source hinzu
         //------------------------------------------------------
-        if (pi_HasToPlay)
-        {
-            //------------------------------------------------------
-            //Füge neue Source hinzu
-            //------------------------------------------------------
-            m_AddedSources.Add(SoundUtilities.AddSourceToObject(gameObject, false, 1.0f, false));
-            //------------------------------------------------------
-            //Versuche erneut
-            //------------------------------------------------------       
-            PlaySound(pi_Clip, pi_Volume);
-        }
+        m_AddedSources.Add(SoundUtilities.AddSourceToObject(gameObject, false, 1.0f, false));
+        //------------------------------------------------------
+        //Versuche erneut
+        //------------------------------------------------------       
+        PlaySound(pi_Clip, pi_Volume);        
 	}
 
     /// <summary>
@@ -153,6 +165,20 @@ public class SoundEffectManager : MonoBehaviour
     /// <param name="pi_HasToPlay">Optional muss gespielt werden</param>
     private void PlayRandomSound(AudioClip[] pi_Clips, float pi_Volume = 1.0f, bool pi_HasToPlay = true)
     {
+        //------------------------------------------------------
+        //Falls der Sound unterbrechen darf
+        //------------------------------------------------------
+        if (!pi_HasToPlay)
+        {
+            //------------------------------------------------------
+            //Spiele Sound auf der entsprechenden Quelle
+            //------------------------------------------------------
+            float l_OldVol = m_MustnPlay.volume;
+            m_MustnPlay.volume = pi_Volume;
+            SoundUtilities.PlayRandomSound(m_MustnPlay, pi_Clips);
+            m_MustnPlay.volume = l_OldVol;
+            return;
+        }
         //------------------------------------------------------
         //Versuche eine Source zu finden die nicht benutzt wird
         //------------------------------------------------------
@@ -171,19 +197,13 @@ public class SoundEffectManager : MonoBehaviour
             }
         }
         //------------------------------------------------------
-        //Falls der Sound wichtig ist
+        //Füge neue Source hinzu
         //------------------------------------------------------
-        if (pi_HasToPlay)
-        {
-            //------------------------------------------------------
-            //Füge neue Source hinzu
-            //------------------------------------------------------
-            m_AddedSources.Add(SoundUtilities.AddSourceToObject(gameObject, false, 1.0f, false));
-            //------------------------------------------------------
-            //Versuche erneut
-            //------------------------------------------------------
-            PlayRandomSound(pi_Clips, pi_Volume);
-        }       
+        m_AddedSources.Add(SoundUtilities.AddSourceToObject(gameObject, false, 1.0f, false));
+        //------------------------------------------------------
+        //Versuche erneut
+        //------------------------------------------------------
+        PlayRandomSound(pi_Clips, pi_Volume);               
     }
 
     /// <summary>
@@ -198,7 +218,7 @@ public class SoundEffectManager : MonoBehaviour
             //------------------------------------------------------
             if (m_AddedSources.Count > 1)
             {
-                for(int i = m_AddedSources.Count - 1; i > 0; i--)
+                for(int i = m_AddedSources.Count - 1; i >= 0; i--)
                 {
                     if (!m_AddedSources[i].isPlaying)
                     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonSwitch : MonoBehaviour
+public class EditButton : MonoBehaviour
 {
     //------------------------------------------------------
     //Referenz auf das Image
@@ -33,16 +33,9 @@ public class ButtonSwitch : MonoBehaviour
         //------------------------------------------------------
         //Switche nur falls kein Overlay aktiv ist
         //------------------------------------------------------
-        if (!UIManager.Instance.UIActive)
+        if (!UIManager.Instance.OverlayEnabled)
         {
-            if(m_Button.color == m_NotActive)
-            {
-                m_Button.color = m_Active;
-            }
-            else
-            {
-                m_Button.color = m_NotActive;
-            }
+            m_Button.color = UIManager.Instance.EditEnabled ? m_Active : m_NotActive;
         }
     }
 }

@@ -202,12 +202,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0f57ed41ad7d9c54aae48978296f2026, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &120341490 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114573782072295170, guid: 555ca2f524bb7c64b967e3bb20bda106,
-    type: 2}
-  m_PrefabInternal: {fileID: 1175762705}
-  m_Script: {fileID: 11500000, guid: a3d6b7c232d81474eb5a46b8b748056a, type: 3}
 --- !u!1001 &126391190
 Prefab:
   m_ObjectHideFlags: 0
@@ -464,31 +458,66 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114803122591260714, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+    - target: {fileID: 114773615343040052, guid: 71802e77d96a85e4080d3e0e9747bd3a,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 178982539}
     - target: {fileID: 114773615343040052, guid: 71802e77d96a85e4080d3e0e9747bd3a,
         type: 2}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 120341490}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: set_EditEnabled
+      objectReference: {fileID: 0}
     - target: {fileID: 114727195340173930, guid: 71802e77d96a85e4080d3e0e9747bd3a,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 178982539}
+    - target: {fileID: 114727195340173930, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Reload
+      objectReference: {fileID: 0}
+    - target: {fileID: 114276445886178490, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
       objectReference: {fileID: 1801382453}
-    - target: {fileID: 114061133763647208, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+    - target: {fileID: 114276445886178490, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RestoreLastSave
+      objectReference: {fileID: 0}
+    - target: {fileID: 114376616028711540, guid: 71802e77d96a85e4080d3e0e9747bd3a,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 178982539}
     - target: {fileID: 114376616028711540, guid: 71802e77d96a85e4080d3e0e9747bd3a,
         type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpgradePyro
+      objectReference: {fileID: 0}
+    - target: {fileID: 114702073895098100, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+        type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 178982539}
+    - target: {fileID: 114702073895098100, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpgradeIce
+      objectReference: {fileID: 0}
+    - target: {fileID: 114061133763647208, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 178982539}
+    - target: {fileID: 114061133763647208, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpgradeLong
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 71802e77d96a85e4080d3e0e9747bd3a, type: 2}
   m_IsPrefabParent: 0
@@ -667,6 +696,12 @@ Transform:
   m_PrefabParentObject: {fileID: 4731297701090050, guid: 0f57ed41ad7d9c54aae48978296f2026,
     type: 2}
   m_PrefabInternal: {fileID: 106503378}
+--- !u!114 &1174775924 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114482918977295690, guid: 71802e77d96a85e4080d3e0e9747bd3a,
+    type: 2}
+  m_PrefabInternal: {fileID: 366131131}
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 --- !u!1001 &1175762705
 Prefab:
   m_ObjectHideFlags: 0
@@ -720,6 +755,11 @@ Prefab:
       propertyPath: m_UpgradeUI
       value: 
       objectReference: {fileID: 1928278066}
+    - target: {fileID: 114627686055155106, guid: 555ca2f524bb7c64b967e3bb20bda106,
+        type: 2}
+      propertyPath: m_AvailableUpgradesText
+      value: 
+      objectReference: {fileID: 1174775924}
     - target: {fileID: 114627686055155106, guid: 555ca2f524bb7c64b967e3bb20bda106,
         type: 2}
       propertyPath: m_Spawner

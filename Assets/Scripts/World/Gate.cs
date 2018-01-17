@@ -96,7 +96,7 @@ public class Gate : MonoBehaviour
             //------------------------------------------------------
             //Nur falls nicht im Editmodus
             //------------------------------------------------------
-            if (!FreezeManager.Instance.Frozen)
+            if (!UIManager.Instance.EditEnabled)
             {
                 //------------------------------------------------------
                 //Je nach Richtung

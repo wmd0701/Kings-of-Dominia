@@ -2,15 +2,10 @@
 
 public class Goal : MonoBehaviour
 {
+    //------------------------------------------------------
+    //Bool ob das Spiel vorbei ist (geht nur einmal..)
+    //------------------------------------------------------
     private bool m_GameOver;
-
-    private void Start()
-    {
-        //------------------------------------------------------
-        //Auch Gegner Könige müssen sich registrieren
-        //------------------------------------------------------
-        FreezeManager.Instance.RegisterRB(GetComponent<Rigidbody>());
-    }
 
     private void Update()
     {

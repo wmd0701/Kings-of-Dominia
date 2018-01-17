@@ -36,7 +36,7 @@ public class CameraBehavior : MonoBehaviour
     //Bool ob in Editmode
     //------------------------------------------------------
     private bool m_InEditMode = false;
-    
+
     #endregion
 
     #region Catch Events
@@ -45,7 +45,7 @@ public class CameraBehavior : MonoBehaviour
         //------------------------------------------------------
         //Passe Blickwinkel falls notwendig an
         //------------------------------------------------------
-        if (FreezeManager.Instance.Frozen && !m_InEditMode)
+        if (UIManager.Instance.EditEnabled && !m_InEditMode)
         {
             //------------------------------------------------------
             //Wechsle Modus
@@ -71,10 +71,10 @@ public class CameraBehavior : MonoBehaviour
                                                               Camera.main.transform.rotation.eulerAngles.y,
                                                               Camera.main.transform.rotation.eulerAngles.z);            
         }
-        else if(!FreezeManager.Instance.Frozen && m_InEditMode)
+        else if(!UIManager.Instance.EditEnabled && m_InEditMode)
         {
             //------------------------------------------------------
-            //Wechsle
+            //Wechsle Modus
             //------------------------------------------------------
             m_InEditMode = !m_InEditMode;
             //------------------------------------------------------
@@ -157,9 +157,9 @@ public class CameraBehavior : MonoBehaviour
             Vector3 l_CurrTouchAvg = (m_TouchOne.position + m_TouchZero.position) / 2;
             Vector3 l_PrevTouchAvg = (m_PrevTouchOne + m_PrevTouchZero) / 2;
             //------------------------------------------------------
-            //Bewege
+            //Bewege (Wichtig: TimeScale beeinflusst deltaTime)
             //------------------------------------------------------
-            Camera.main.transform.Translate((l_PrevTouchAvg - l_CurrTouchAvg) * Time.deltaTime * m_MoveSpeed);
+            Camera.main.transform.Translate((l_PrevTouchAvg - l_CurrTouchAvg) * Time.unscaledDeltaTime * m_MoveSpeed); 
         }
     }
 
@@ -176,16 +176,28 @@ public class CameraBehavior : MonoBehaviour
         //Berechne Delta der Distanz
         //------------------------------------------------------
         float l_DeltaMagDiff = l_PrevTouchMag - l_CurrTouchMag;
-        //------------------------------------------------------
-        //Bestimme neue Position
-        //------------------------------------------------------
+        //-----------------------------------------------------------------
+        //Bestimme neue Position (Wichtig: TimeScale beeinflusst deltaTime)
+        //-----------------------------------------------------------------
         Vector3 l_NewPos = Camera.main.transform.position +
-            Camera.main.transform.forward * -1 * l_DeltaMagDiff * m_ZoomSpeed * Time.deltaTime;
+            Camera.main.transform.forward * -1 * l_DeltaMagDiff * m_ZoomSpeed * Time.unscaledDeltaTime;
         //------------------------------------------------------
         //Bewege ggf. auf neue Position
         //------------------------------------------------------
         if (l_NewPos.y <= m_ZoomMax && l_NewPos.y >= m_ZoomMin)
             Camera.main.transform.position = l_NewPos;
+        //------------------------------------------------------
+        //Beschränke max. Höhe, passe ggf. an
+        //------------------------------------------------------
+        if (Camera.main.transform.position.y > m_ZoomMax)
+            Camera.main.transform.position = 
+                Camera.main.transform.position - new Vector3(0, Camera.main.transform.position.y - m_ZoomMax, 0);
+        //------------------------------------------------------
+        //Beschränke min. Höhe, passe ggf. an
+        //------------------------------------------------------
+        if (Camera.main.transform.position.y < m_ZoomMin)
+            Camera.main.transform.position =
+                Camera.main.transform.position + new Vector3(0, m_ZoomMin - Camera.main.transform.position.y, 0);
     }
 
     #endregion

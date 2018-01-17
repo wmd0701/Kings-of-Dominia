@@ -19,7 +19,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4292717935659374}
-  - component: {fileID: 114573782072295170}
   - component: {fileID: 114383227916224076}
   - component: {fileID: 114627686055155106}
   m_Layer: 0
@@ -65,17 +64,6 @@ MonoBehaviour:
   m_GateOpen: {fileID: 8300000, guid: d2d8cdc35cf2481449f0fc5958fdf307, type: 3}
   m_LeverContact: {fileID: 8300000, guid: 75e297ca6ab6f4542b4bbc1549fc55a4, type: 3}
   m_WinSound: {fileID: 8300000, guid: 6ecf39dcbacbe78428ed4191b66eba6a, type: 3}
---- !u!114 &114573782072295170
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1340503453108946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3d6b7c232d81474eb5a46b8b748056a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114627686055155106
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -89,4 +77,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_WinUI: {fileID: 0}
   m_UpgradeUI: {fileID: 0}
+  m_AvailableUpgradesText: {fileID: 0}
   m_Spawner: {fileID: 0}
+  m_AvailableUpgrades: 3

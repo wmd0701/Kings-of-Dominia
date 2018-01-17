@@ -56,6 +56,7 @@ MonoBehaviour:
   - {fileID: 1968351117815174, guid: a304b9f6735191f4a82bc422a073e758, type: 2}
   - {fileID: 1500317483525008, guid: f64c0b34ecb89b840a90359a7cd813f3, type: 2}
   - {fileID: 1220578396242024, guid: 9cf84d3efa4cd564d9d96298a4cc706c, type: 2}
+  - {fileID: 1907026305079878, guid: e86f834b409e3d8498b29bac7bc8ed0f, type: 2}
   m_DominoDistance: 1
   m_EpsilonHeightDiff: 0.01
   m_HoldUntilUpgrade: 0.2

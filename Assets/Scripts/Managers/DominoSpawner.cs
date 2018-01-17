@@ -17,7 +17,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
         {
             Destroy,
             UpgradeIce,
-            UpgradeLong
+            UpgradeLong,
+            UpgradePyro
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     [SerializeField]
     private float m_DominoDistance = 1.0f;
     //------------------------------------------------------
-    //Distanz +/- ab Null wo gespawnt werden darf/kann
+    //Erlaubte Höhendifferenz
     //------------------------------------------------------
     [SerializeField]
     private float m_EpsilonHeightDiff = 0.01f;
@@ -79,10 +80,6 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     //------------------------------------------------------
     private bool m_CancelTouch;
     //------------------------------------------------------
-    //Bool ob zeichnen aktuell erlaubt ist
-    //------------------------------------------------------
-    private bool m_DrawEnabled;
-    //------------------------------------------------------
     //Letztes ausgewählter Domino
     //------------------------------------------------------
     private GameObject m_LastSelected;
@@ -90,6 +87,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     //Aktueller Timer
     //------------------------------------------------------
     private float m_UpgradeTimer;
+    //------------------------------------------------------
+    //Liste der Positionen die nicht interpoliert werden
+    //------------------------------------------------------
+    private List<int> m_NoInterpolation = new List<int>();
 
     #endregion
 
@@ -132,7 +133,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls nicht im Editmode und Domino getroffen wurde..
                 //------------------------------------------------------
-                if(!FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
+                if(!UIManager.Instance.EditEnabled && !UIManager.Instance.OverlayEnabled && !m_CancelTouch &&
                     Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
@@ -143,7 +144,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls ein Domino getroffen wurde (stationär)
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
+                if (UIManager.Instance.EditEnabled && !UIManager.Instance.OverlayEnabled && !m_CancelTouch &&
                     Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")) && 
                     Input.GetTouch(0).phase == TouchPhase.Stationary)
                 {
@@ -157,10 +158,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                         //------------------------------------------------------
                         if (m_UpgradeTimer > 0)
                         {
-                            //------------------------------------------------------
-                            //Ziehe vergangene Zeit ab
-                            //------------------------------------------------------
-                            m_UpgradeTimer -= Time.deltaTime;
+                            //-------------------------------------------------------------------
+                            //Ziehe vergangene Zeit ab (Wichtig: TimeScale beeinflusst deltaTime)
+                            //-------------------------------------------------------------------
+                            m_UpgradeTimer -= Time.unscaledDeltaTime;
                         }
                         else
                         {
@@ -182,18 +183,18 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                             m_CancelTouch = true;
                         }                    
                     }
+                    //------------------------------------------------------
+                    //Ansonsten setzte Timer zurück
+                    //------------------------------------------------------
                     else
                     {
-                        //------------------------------------------------------
-                        //Ansonsten setzte Timer zurück
-                        //------------------------------------------------------
                         m_UpgradeTimer = m_HoldUntilUpgrade;
                     }
                 }
                 //--------------------------------------------------------------
-                //Falls ein Domino getroffen wurde (und gezeichnet wird)
+                //Falls ein Domino getroffen wurde
                 //--------------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
+                if (UIManager.Instance.EditEnabled && !UIManager.Instance.OverlayEnabled && !m_CancelTouch &&
                     Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
                     //------------------------------------------------------
@@ -206,10 +207,6 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                         //------------------------------------------------------
                         m_Spawner.positionCount++;
                         m_Spawner.SetPosition(m_Spawner.positionCount - 1, l_Hit.transform.position);
-                        //------------------------------------------------------
-                        //Erlaube zeichnen
-                        //------------------------------------------------------
-                        m_DrawEnabled = true;
                     }
                     //--------------------------------------------------------------
                     //Ansonsten falls der Endstein getroffen wurde spawne
@@ -226,8 +223,8 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //------------------------------------------------------
                 //Falls im Editmode und ein Trigger getroffen..
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
-                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Trigger")) && m_DrawEnabled)
+                if (UIManager.Instance.EditEnabled && !UIManager.Instance.OverlayEnabled && !m_CancelTouch &&
+                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Trigger")))
                 {
                     //------------------------------------------------------
                     //Hole Ecken des Triggers (angeordnet in CCW)
@@ -278,30 +275,64 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     }
                 }
                 //------------------------------------------------------
-                //Falls im Editmode und das Level getroffen wurde..
+                //Falls im Editmode und das Level getroffen wurde
                 //------------------------------------------------------
-                if (FreezeManager.Instance.Frozen && !UIManager.Instance.UIActive && !m_CancelTouch &&
-                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")) && m_DrawEnabled)
+                if (UIManager.Instance.EditEnabled && !UIManager.Instance.OverlayEnabled && !m_CancelTouch &&
+                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
                 {
                     //--------------------------------------------------------------
-                    //..Speichere Hit im Spawnarray falls ungefähr auf gleicher Höhe
+                    //Falls der Boden getroffen wurde
                     //--------------------------------------------------------------
-                    if (Mathf.Abs(l_Hit.point.y - m_Spawner.GetPosition(m_Spawner.positionCount - 1).y) < m_EpsilonHeightDiff)
+                    if (l_Hit.transform.CompareTag("Floor"))
                     {
-                        m_Spawner.positionCount++;
-                        m_Spawner.SetPosition(m_Spawner.positionCount - 1, l_Hit.point);
+                        //------------------------------------------------------
+                        //Falls bereits Positionen im Spawnarray
+                        //------------------------------------------------------
+                        if (m_Spawner.positionCount > 0)
+                        {
+                            //--------------------------------------------------------------
+                            //Speichere Hit im Spawnarray falls ungefähr auf gleicher Höhe
+                            //--------------------------------------------------------------
+                            if (Mathf.Abs(l_Hit.point.y - m_Spawner.GetPosition(m_Spawner.positionCount - 1).y) < m_EpsilonHeightDiff)
+                            {
+                                m_Spawner.positionCount++;
+                                m_Spawner.SetPosition(m_Spawner.positionCount - 1, l_Hit.point);
+                            }
+                            //------------------------------------------------------
+                            //Oder spawne Dominos
+                            //------------------------------------------------------
+                            else
+                            {
+                                SpawnDominos();
+                                //------------------------------------------------------
+                                //Breche Touch ab
+                                //------------------------------------------------------
+                                m_CancelTouch = true;
+                            }
+                        }
+                        //------------------------------------------------------
+                        //Ansonsten füge Position hinzu
+                        //------------------------------------------------------
+                        else
+                        {
+                            m_Spawner.positionCount++;
+                            m_Spawner.SetPosition(m_Spawner.positionCount - 1, l_Hit.point);
+                        }
                     }
                     //------------------------------------------------------
-                    //..Oder spawne Dominos
+                    //Falls nicht gerade ein Bogen getroffen wurde
                     //------------------------------------------------------
-                    else
+                    else if(!l_Hit.transform.CompareTag("Arch"))
                     {
-                        SpawnDominos();
-                        //------------------------------------------------------
-                        //Breche Touch ab
-                        //------------------------------------------------------
-                        m_CancelTouch = true;
+                        if (!m_NoInterpolation.Contains(m_Spawner.positionCount))
+                        {
+                            //---------------------------------------------------------
+                            //Dann darf nicht zur nächsten Position interpoliert werden
+                            //---------------------------------------------------------
+                            m_NoInterpolation.Add(m_Spawner.positionCount);                            
+                        }
                     }
+
                 }
             }
             //------------------------------------------------------
@@ -343,62 +374,82 @@ public class DominoSpawner : MonoBehaviour, UndoChange
         //------------------------------------------------------
         if (m_LastSelected != null)
         {
-            GameObject l_Replace;
             //------------------------------------------------------
-            //Je nach Upgrade-Typ
+            //Falls es noch Upgrades gibt
             //------------------------------------------------------
-            switch (pi_Type)
+            if (UIManager.Instance.AvailableUpgrades > 0)
             {
-                case Domino.DominoType.Ice:
-                    //------------------------------------------------------
-                    //Finde Eis Domino und instanziere ihn
-                    //------------------------------------------------------
-                    l_Replace = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.CompareTag("DominoIce"));
-                    l_Replace = Instantiate(l_Replace, m_LastSelected.transform.position, m_LastSelected.transform.rotation);
-                    //------------------------------------------------------
-                    //Speichere RB im Manager
-                    //------------------------------------------------------
-                    FreezeManager.Instance.RegisterRB(l_Replace.GetComponent<Rigidbody>());
-                    //------------------------------------------------------
-                    //Speichere den Change
-                    //------------------------------------------------------
-                    SaveLastChange(new DominoChange(new GameObject[] { l_Replace, m_LastSelected }, DominoChange.enRestoreMode.UpgradeIce));
-                    //------------------------------------------------------
-                    //Deaktivere normalen Domino
-                    //------------------------------------------------------
-                    m_LastSelected.SetActive(false);
-                    break;
-                case Domino.DominoType.Long:
-                    //------------------------------------------------------
-                    //Finde langen Domino und instanziere ihn
-                    //------------------------------------------------------
-                    l_Replace = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.CompareTag("DominoLong"));
-                    l_Replace = Instantiate(l_Replace, m_LastSelected.transform.position, m_LastSelected.transform.rotation);
-                    //------------------------------------------------------
-                    //Speichere RB im Manager
-                    //------------------------------------------------------
-                    FreezeManager.Instance.RegisterRB(l_Replace.GetComponent<Rigidbody>());
-                    //------------------------------------------------------
-                    //Speichere den Change
-                    //------------------------------------------------------
-                    SaveLastChange(new DominoChange(new GameObject[] { l_Replace, m_LastSelected }, DominoChange.enRestoreMode.UpgradeLong));
-                    //------------------------------------------------------
-                    //Deaktivere normalen Domino
-                    //------------------------------------------------------
-                    m_LastSelected.SetActive(false);
-                    break;
+                GameObject l_Replace;
                 //------------------------------------------------------
-                //Fehler!
+                //Je nach Upgrade-Typ
                 //------------------------------------------------------
-                default:
-                    Debug.LogError("Case not implemented (upgrade)");
-                    break;
+                switch (pi_Type)
+                {
+                    case Domino.DominoType.Ice:
+                        //------------------------------------------------------
+                        //Finde Eis Domino und instanziere ihn
+                        //------------------------------------------------------
+                        l_Replace = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.CompareTag("DominoIce"));
+                        l_Replace = Instantiate(l_Replace, m_LastSelected.transform.position, m_LastSelected.transform.rotation);
+                        //------------------------------------------------------
+                        //Speichere den Change
+                        //------------------------------------------------------
+                        SaveLastChange(new DominoChange(new GameObject[] { l_Replace, m_LastSelected }, DominoChange.enRestoreMode.UpgradeIce));
+                        //------------------------------------------------------
+                        //Deaktivere normalen Domino
+                        //------------------------------------------------------
+                        m_LastSelected.SetActive(false);
+                        break;
+                    case Domino.DominoType.Long:
+                        //------------------------------------------------------
+                        //Finde langen Domino und instanziere ihn
+                        //------------------------------------------------------
+                        l_Replace = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.CompareTag("DominoLong"));
+                        l_Replace = Instantiate(l_Replace, m_LastSelected.transform.position, m_LastSelected.transform.rotation);
+                        //------------------------------------------------------
+                        //Speichere den Change
+                        //------------------------------------------------------
+                        SaveLastChange(new DominoChange(new GameObject[] { l_Replace, m_LastSelected }, DominoChange.enRestoreMode.UpgradeLong));
+                        //------------------------------------------------------
+                        //Deaktivere normalen Domino
+                        //------------------------------------------------------
+                        m_LastSelected.SetActive(false);
+                        break;
+                    case Domino.DominoType.Pyro:
+                        //------------------------------------------------------
+                        //Finde langen Domino und instanziere ihn
+                        //------------------------------------------------------
+                        l_Replace = System.Array.Find(m_DominoPrefabs, b_Search => b_Search.CompareTag("DominoPyro"));
+                        l_Replace = Instantiate(l_Replace, m_LastSelected.transform.position, m_LastSelected.transform.rotation);
+                        //------------------------------------------------------
+                        //Speichere den Change
+                        //------------------------------------------------------
+                        SaveLastChange(new DominoChange(new GameObject[] { l_Replace, m_LastSelected }, DominoChange.enRestoreMode.UpgradePyro));
+                        //------------------------------------------------------
+                        //Deaktivere normalen Domino
+                        //------------------------------------------------------
+                        m_LastSelected.SetActive(false);
+                        break;
+                    //------------------------------------------------------
+                    //Fehler!
+                    //------------------------------------------------------
+                    default:
+                        Debug.LogError("Case not implemented (upgrade)");
+                        break;
+                }
+                //------------------------------------------------------
+                //Setzte Auswahl zurück
+                //------------------------------------------------------
+                m_LastSelected = null;
+                //------------------------------------------------------
+                //Reduziere Anzahl der Upgrades
+                //------------------------------------------------------
+                UIManager.Instance.AvailableUpgrades--;
             }
-            //------------------------------------------------------
-            //Setzte Auswahl zurück
-            //------------------------------------------------------
-            m_LastSelected = null;
         }
+        //------------------------------------------------------
+        //Fehler!
+        //------------------------------------------------------
         else
         {
             Debug.LogWarning("Trying to upgrade null");
@@ -410,10 +461,6 @@ public class DominoSpawner : MonoBehaviour, UndoChange
     /// </summary>
     private void SpawnDominos()
     {
-        //------------------------------------------------------
-        //Deaktiviere zeichnen
-        //------------------------------------------------------
-        m_DrawEnabled = false;
         //------------------------------------------------------
         //Erstelle Array für Positionen
         //------------------------------------------------------
@@ -427,11 +474,15 @@ public class DominoSpawner : MonoBehaviour, UndoChange
         //------------------------------------------------------
         m_Spawner.positionCount = 0;
         //------------------------------------------------------
-        //Erstelle Listen für plausible Positionen..
+        //Liste der gültigen Positionen
         //------------------------------------------------------
         List<Vector3> l_WorkingPositions = new List<Vector3>();
         //------------------------------------------------------
-        //..Und deren Rotationen
+        //Liste der Positionen die nicht interpoliert werden
+        //------------------------------------------------------
+        List<Vector3> l_NoInterpolation = new List<Vector3>();
+        //------------------------------------------------------
+        //Liste der (interpolierten) Rotationen
         //------------------------------------------------------
         List<Quaternion> l_InterpolatedRotations = new List<Quaternion>();
         //------------------------------------------------------
@@ -455,10 +506,32 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     if ((l_Positions[j] - l_Positions[i]).magnitude > m_DominoDistance)
                     {
                         //----------------------------------------------------------
-                        //Füge den entfernten Punkt in die Liste ein,
-                        //passe Zähler an dann verlasse die innere Schleife
+                        //Füge den Punkt in die Liste ein
                         //----------------------------------------------------------
                         l_WorkingPositions.Add(l_Positions[i]);
+                        //-------------------------------------------------------------
+                        //Falls es Positionen gibt die nicht interpoliert werden dürfen
+                        //-------------------------------------------------------------
+                        if(m_NoInterpolation.Count > 0)
+                        {
+                            //----------------------------------------------------------
+                            //Falls die aktuelle Position nicht interpoliert werden darf
+                            //----------------------------------------------------------
+                            if (m_NoInterpolation[0] <= i)
+                            {
+                                //------------------------------------------------------
+                                //Füge in die Liste ein
+                                //------------------------------------------------------
+                                l_NoInterpolation.Add(l_Positions[i]);
+                                //------------------------------------------------------
+                                //Entferne die Position aus der Liste
+                                //------------------------------------------------------
+                                m_NoInterpolation.RemoveAt(0);
+                            }                        
+                        }
+                        //------------------------------------------------------
+                        //Setzte Zähler vor und verlasse die innere Schleife
+                        //------------------------------------------------------
                         i = j;
                         break;
                     }
@@ -469,6 +542,11 @@ public class DominoSpawner : MonoBehaviour, UndoChange
             //------------------------------------------------------
             l_WorkingPositions.Add(l_Positions[l_Positions.Length - 1]);
             //------------------------------------------------------
+            //ggf. darf der letzte Punkt nicht interpoliert werden
+            //------------------------------------------------------
+            if(m_NoInterpolation.Count > 0)            
+                l_NoInterpolation.Add(l_Positions[l_Positions.Length - 1]);            
+            //------------------------------------------------------
             //Liste mit interpolierten Zwischenpunkten
             //------------------------------------------------------
             List<Vector3> l_InterpolatedPositions = new List<Vector3>();
@@ -478,15 +556,21 @@ public class DominoSpawner : MonoBehaviour, UndoChange
             for (int i = 0; i < l_WorkingPositions.Count - 1; i++)
             {
                 //------------------------------------------------------
-                //Bestimme Distanz
+                //Interpoliere nur falls erlaubt
                 //------------------------------------------------------
-                Vector3 l_Diff = l_WorkingPositions[i + 1] - l_WorkingPositions[i];
-                //---------------------------------------------------------------------------------------
-                //Erstelle Zwischenpunkte basierend auf der gewünschten Spawndistanz zwischen den Steinen
-                //---------------------------------------------------------------------------------------
-                for (int j = 0; j < (l_Diff.magnitude / m_DominoDistance) - 1; j++)
+                if (!l_NoInterpolation.Contains(l_WorkingPositions[i + 1]))
                 {
-                    l_InterpolatedPositions.Add(l_WorkingPositions[i] + ((l_Diff / (l_Diff.magnitude / m_DominoDistance)) * j));
+                    //------------------------------------------------------
+                    //Bestimme Distanz
+                    //------------------------------------------------------                
+                    Vector3 l_Diff = l_WorkingPositions[i + 1] - l_WorkingPositions[i];
+                    //---------------------------------------------------------------------------------------
+                    //Erstelle Zwischenpunkte basierend auf der gewünschten Spawndistanz zwischen den Steinen
+                    //---------------------------------------------------------------------------------------
+                    for (int j = 0; j < (l_Diff.magnitude / m_DominoDistance) - 1; j++)
+                    {
+                        l_InterpolatedPositions.Add(l_WorkingPositions[i] + ((l_Diff / (l_Diff.magnitude / m_DominoDistance)) * j));
+                    }
                 }
             }            
             //---------------------------------------------------------
@@ -536,10 +620,9 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 for (int i = 1; i < l_InterpolatedPositions.Count; i++)
                 {
                     //-----------------------------------------------------------------
-                    //Füge RB zum Manager hinzu und GameObject ins Array
+                    //Füge GameObject ins Array
                     //-----------------------------------------------------------------
-                    l_Spawned[i] = Instantiate(l_Standart, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);
-                    FreezeManager.Instance.RegisterRB(l_Spawned[i].GetComponent<Rigidbody>());                    
+                    l_Spawned[i] = Instantiate(l_Standart, l_InterpolatedPositions[i], l_InterpolatedRotations[i]);           
                 }
                 //-----------------------------------------------------------
                 //Speichere Änderung
@@ -547,6 +630,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 SaveLastChange(new DominoChange(l_Spawned, DominoChange.enRestoreMode.Destroy));
             }
         }
+        //------------------------------------------------------
+        //Leere die Interpolation verboten Liste
+        //------------------------------------------------------
+        m_NoInterpolation.Clear();
     }
 
     /// <summary>
@@ -576,7 +663,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
         //-----------------------------------------------------------
         //Geht nur falls es eine Änderung gab bzw. im Edit-Mode
         //-----------------------------------------------------------
-        if (m_Changes.Count == 0 || !FreezeManager.Instance.Frozen)
+        if (m_Changes.Count == 0 || !UIManager.Instance.EditEnabled)
             return;
         else
         {
@@ -606,7 +693,6 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                         //-----------------------------------------------------------
                         //Entferne altes Objekt
                         //-----------------------------------------------------------
-                        FreezeManager.Instance.RemoveRB(l_LastChange.m_ChangedDominos[i].GetComponent<Rigidbody>());
                         Destroy(l_LastChange.m_ChangedDominos[i]);
                         break;
                     //------------------------------------------------------
@@ -614,17 +700,14 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                     //------------------------------------------------------
                     case DominoChange.enRestoreMode.UpgradeIce:
                     case DominoChange.enRestoreMode.UpgradeLong:
+                    case DominoChange.enRestoreMode.UpgradePyro:
                         //------------------------------------------------------
                         //An Position Null ist der Upgradestein gespeichert..
                         //------------------------------------------------------
                         if (i == 0)
                         {
                             //------------------------------------------------------
-                            //Entferne vom FreezeManager
-                            //------------------------------------------------------
-                            FreezeManager.Instance.RemoveRB(l_LastChange.m_ChangedDominos[i].GetComponent<Rigidbody>());
-                            //------------------------------------------------------
-                            //Und zerstöre den Stein
+                            //Zerstöre den Stein
                             //------------------------------------------------------
                             Destroy(l_LastChange.m_ChangedDominos[i]);
                         }
@@ -634,9 +717,13 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                             //An Position Eins ist der alte Stein -> Reaktiviere
                             //------------------------------------------------------
                             l_LastChange.m_ChangedDominos[i].SetActive(true);
+                            //------------------------------------------------------
+                            //Erhöhe Anzahl der verfügbaren Upgrades
+                            //------------------------------------------------------
+                            UIManager.Instance.AvailableUpgrades++;
                         }
                         //------------------------------------------------------
-                        //Fertig
+                        //Downgrade vollständig
                         //------------------------------------------------------
                         break;
                     //------------------------------------------------------
