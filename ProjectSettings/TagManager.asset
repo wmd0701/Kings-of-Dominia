@@ -18,6 +18,8 @@ TagManager:
   - Cannon
   - Trigger
   - Stairs
+  - Canon
+  - Lava
   layers:
   - Default
   - TransparentFX
