@@ -20,6 +20,7 @@ public class SoundEffectManager : MonoBehaviour
 	[SerializeField] private AudioClip m_GateClose;
 	[SerializeField] private AudioClip m_GateOpen;
 	[SerializeField] private AudioClip m_LeverContact;
+    [SerializeField] private AudioClip m_LavaDestroy;
     [SerializeField] private AudioClip m_WinSound;
     //------------------------------------------------------
     //Liste mit Sources
@@ -96,7 +97,12 @@ public class SoundEffectManager : MonoBehaviour
         PlaySound(m_GateOpen);
 	}
 
-	public void PlayLeverContact()
+    public void PlayLavaDestroy()
+    {
+        PlaySound(m_LavaDestroy);
+    }
+
+    public void PlayLeverContact()
 	{
 		PlaySound(m_LeverContact);
 	}
