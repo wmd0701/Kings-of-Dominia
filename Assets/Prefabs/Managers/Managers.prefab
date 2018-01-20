@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114383227916224076}
   - component: {fileID: 114627686055155106}
   m_Layer: 0
-  m_Name: FreezeManager
+  m_Name: Managers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52,17 +52,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b3d5b5916537414b841a6038ac4faec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CanonDominoContact: {fileID: 8300000, guid: 84fb3625d47de974f9f564098e67f378,
+  m_CanonDominoContact: {fileID: 8300000, guid: e1316481b85bf37448905fd232a67514,
     type: 3}
   m_MenuClose: {fileID: 8300000, guid: 890e7a60dec8b464fbc02d3f8f92f7ca, type: 3}
   m_MenuOpen: {fileID: 8300000, guid: 2f583458638a674479e29eb73c30dec8, type: 3}
   m_DominoFall: {fileID: 8300000, guid: 5224b94c6d20295468030fdd076497a2, type: 3}
   m_DominoSetting: {fileID: 8300000, guid: d8d4ce1caa9d10248b2e3362c5f638ab, type: 3}
   m_CannonShots:
-  - {fileID: 8300000, guid: 07e3594aec900074ca28bd7418d74a67, type: 3}
+  - {fileID: 8300000, guid: b39b4b7ef73343f4485f35a85ea235a3, type: 3}
   m_GateClose: {fileID: 8300000, guid: e577b761488ee424086fe96d6bb4d557, type: 3}
   m_GateOpen: {fileID: 8300000, guid: d2d8cdc35cf2481449f0fc5958fdf307, type: 3}
   m_LeverContact: {fileID: 8300000, guid: 75e297ca6ab6f4542b4bbc1549fc55a4, type: 3}
+  m_LavaDestroy: {fileID: 8300000, guid: b3fdfb4766295d746a7460b064ad6f88, type: 3}
   m_WinSound: {fileID: 8300000, guid: 6ecf39dcbacbe78428ed4191b66eba6a, type: 3}
 --- !u!114 &114627686055155106
 MonoBehaviour:

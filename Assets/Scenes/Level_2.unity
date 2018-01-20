@@ -10472,14 +10472,14 @@ Prefab:
       objectReference: {fileID: 1928278066}
     - target: {fileID: 114627686055155106, guid: 555ca2f524bb7c64b967e3bb20bda106,
         type: 2}
-      propertyPath: m_Spawner
-      value: 
-      objectReference: {fileID: 1801382453}
-    - target: {fileID: 114627686055155106, guid: 555ca2f524bb7c64b967e3bb20bda106,
-        type: 2}
       propertyPath: m_AvailableUpgradesText
       value: 
       objectReference: {fileID: 1624935495}
+    - target: {fileID: 114627686055155106, guid: 555ca2f524bb7c64b967e3bb20bda106,
+        type: 2}
+      propertyPath: m_Spawner
+      value: 
+      objectReference: {fileID: 1801382453}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 555ca2f524bb7c64b967e3bb20bda106, type: 2}
   m_IsPrefabParent: 0
