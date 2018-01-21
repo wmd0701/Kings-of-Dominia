@@ -10,12 +10,17 @@ class Cannon : MonoBehaviour, IPointerDownHandler
     //Prefab für Projektil
     //------------------------------------------------------
     [SerializeField]
-    private GameObject m_Canonball;
+    private GameObject m_CannonBall;
     //------------------------------------------------------
     //Spawnkoordinaten des Projektils
     //------------------------------------------------------
     [SerializeField]
-    private Transform m_CanonSpawn;
+    private Transform m_CannonSpawn;
+    //------------------------------------------------------
+    //Die Kanone (damit das Drehen funktioniert)
+    //------------------------------------------------------
+    [SerializeField]
+    private Transform m_Cannon;
     //------------------------------------------------------
     //LineRenderer Prefab für Schussanzeige
     //------------------------------------------------------    
@@ -199,7 +204,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //-----------------------------------------------------
             //Rotiere Kanone
             //-----------------------------------------------------
-            gameObject.transform.Rotate(Vector3.up, l_TouchOneDeltaAngle - l_TouchZeroDeltaAngle);
+            m_Cannon.Rotate(Vector3.up, l_TouchOneDeltaAngle - l_TouchZeroDeltaAngle);
             //-----------------------------------------------------
             //Update Schussanzeige
             //-----------------------------------------------------
@@ -239,11 +244,11 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //------------------------------------------------------
             //Erstelle ein Projektil
             //------------------------------------------------------
-            GameObject l_Ball = Instantiate(m_Canonball, m_CanonSpawn.position, m_CanonSpawn.rotation);
+            GameObject l_Ball = Instantiate(m_CannonBall, m_CannonSpawn.position, m_CannonSpawn.rotation);
             //------------------------------------------------------
             //Gebe dem Projektil eine Geschwindigkeit
             //------------------------------------------------------            
-            l_Ball.GetComponent<Rigidbody>().velocity = m_CanonSpawn.forward.normalized * m_ShotVelocity;
+            l_Ball.GetComponent<Rigidbody>().velocity = m_CannonSpawn.forward.normalized * m_ShotVelocity;
             //------------------------------------------------------
             //Spiele passenden Sound
             //------------------------------------------------------
@@ -263,7 +268,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //-----------------------------------------------------
         //Bestimme Schussgeschwindigkeit
         //-----------------------------------------------------
-        Vector3 l_ShotVelocity = m_CanonSpawn.forward.normalized * m_ShotVelocity;
+        Vector3 l_ShotVelocity = m_CannonSpawn.forward.normalized * m_ShotVelocity;
         //-----------------------------------------------------
         //Bestimme Teilgeschwindigkeiten
         //-----------------------------------------------------
@@ -282,7 +287,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //Erste Position ist der Spawn
         //-----------------------------------------------------
         m_ShotRenderer.positionCount = 1;
-        m_ShotRenderer.SetPosition(0, m_CanonSpawn.position);
+        m_ShotRenderer.SetPosition(0, m_CannonSpawn.position);
         //-----------------------------------------------------
         //Maximal 1000 Punkte! (Crash-Safe)
         //-----------------------------------------------------
@@ -298,9 +303,9 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //-----------------------------------------------------
             //Erstelle Punkt
             //-----------------------------------------------------
-            Vector3 l_NextPos = new Vector3(m_CanonSpawn.position.x + l_NextX,
-                                            m_CanonSpawn.position.y + l_NextY,
-                                            m_CanonSpawn.position.z + l_NextZ);
+            Vector3 l_NextPos = new Vector3(m_CannonSpawn.position.x + l_NextX,
+                                            m_CannonSpawn.position.y + l_NextY,
+                                            m_CannonSpawn.position.z + l_NextZ);
             //------------------------------------------------------------------
             //Falls entweder das Level oder die DeathZone getroffen wurden..
             //------------------------------------------------------------------
