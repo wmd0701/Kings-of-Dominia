@@ -23,10 +23,10 @@ public class CameraBehavior : MonoBehaviour
     [SerializeField]
     private float m_MoveSpeed = 10f;
     //------------------------------------------------------
-    //Kartenmittelpunkt
+    //Rotationsgeschwindigkeit (um Y)
     //------------------------------------------------------
     [SerializeField]
-    private Vector3 m_RotatePoint = new Vector3(0, 0, 0);
+    private float m_RotateSpeed = 30f;
     //------------------------------------------------------
     //Touchpunkte
     //------------------------------------------------------
@@ -137,9 +137,15 @@ public class CameraBehavior : MonoBehaviour
         float l_TouchOneDeltaAngle =  Mathf.Atan2((m_PrevTouchZero - m_PrevTouchOne).y,
                                                   (m_PrevTouchZero - m_PrevTouchOne).x) * Mathf.Rad2Deg;
         //------------------------------------------------------
-        //Rotiere um den Mittelpunkt
+        //Bestimme neue Rotation
         //------------------------------------------------------
-        Camera.main.transform.RotateAround(m_RotatePoint, Vector3.up, l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle);
+        Quaternion l_NewRotation = Quaternion.Euler(Camera.main.transform.rotation.eulerAngles + 
+            new Vector3(0, l_TouchZeroDeltaAngle - l_TouchOneDeltaAngle, 0));
+        //------------------------------------------------------
+        //Wende an
+        //------------------------------------------------------
+        Camera.main.transform.rotation = Quaternion.Slerp(Camera.main.transform.rotation, 
+            l_NewRotation, Time.unscaledDeltaTime * m_RotateSpeed);
     }
 
     /// <summary>
@@ -152,14 +158,22 @@ public class CameraBehavior : MonoBehaviour
         if (m_TouchZero.phase != TouchPhase.Stationary && m_TouchOne.phase != TouchPhase.Stationary)
         {
             //------------------------------------------------------
-            //Berechne Delta
+            //Berechne aktuelle / vorherige Positionen
             //------------------------------------------------------
             Vector3 l_CurrTouchAvg = (m_TouchOne.position + m_TouchZero.position) / 2;
             Vector3 l_PrevTouchAvg = (m_PrevTouchOne + m_PrevTouchZero) / 2;
             //------------------------------------------------------
-            //Bewege (Wichtig: TimeScale beeinflusst deltaTime)
+            //Bestimme Delta (skaliert nach Geschwindigkeit)
             //------------------------------------------------------
-            Camera.main.transform.Translate((l_PrevTouchAvg - l_CurrTouchAvg) * Time.unscaledDeltaTime * m_MoveSpeed); 
+            Vector3 l_DeltaDirection = (l_PrevTouchAvg - l_CurrTouchAvg) * Time.unscaledDeltaTime * m_MoveSpeed;
+            //--------------------------------------------------------
+            //Bestimme Richtung des Vektors von Kamera-Space ausgehend
+            //--------------------------------------------------------
+            l_DeltaDirection = Camera.main.transform.TransformVector(l_DeltaDirection);
+            //------------------------------------------------------
+            //Addiere neue Richtung auf die Position (verwerfe Y!)
+            //------------------------------------------------------
+            Camera.main.transform.position += new Vector3(l_DeltaDirection.x, 0, l_DeltaDirection.z);
         }
     }
 

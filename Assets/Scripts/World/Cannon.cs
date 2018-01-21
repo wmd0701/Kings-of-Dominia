@@ -37,6 +37,11 @@ class Cannon : MonoBehaviour, IPointerDownHandler
     [SerializeField]
     private int m_ShotCount;
     //------------------------------------------------------
+    //Zeitintervall bis der Kanonenmodus beendet wird
+    //------------------------------------------------------
+    [SerializeField]
+    float m_CancelInterval = 0.3f;
+    //------------------------------------------------------
     //Referenz auf Kamerascript
     //------------------------------------------------------
     private CameraBehavior m_CameraBehavior;
@@ -44,6 +49,18 @@ class Cannon : MonoBehaviour, IPointerDownHandler
     //Bool ob Kanone gesteuert wird
     //------------------------------------------------------
     bool m_CanonControllable = false;
+    //------------------------------------------------------
+    //Aktueller Timer
+    //------------------------------------------------------
+    float m_CancelCurrent;
+    //------------------------------------------------------
+    //Gespeicherte Kamera Position
+    //------------------------------------------------------
+    Vector3 m_CameraPositionSave;
+    //------------------------------------------------------
+    //Gespeicherte Kamera Rotation
+    //------------------------------------------------------
+    Quaternion m_CameraRotationSave;
 
     #endregion
 
@@ -52,7 +69,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
     /// <summary>
     /// Wechselt zwischen Kamera/Kanonenkontrolle
     /// </summary>
-    private bool CanonControl
+    private bool CannonControl
     {
         get
         {
@@ -61,10 +78,29 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         set
         {
             //-----------------------------------------------------
-            //Schalte Kamera an/aus und gebe/nehme Kanonenkontrolle
+            //Falls noch keine Kanone kontrolliert wird
             //-----------------------------------------------------
-            m_CameraBehavior.enabled = !value;
-            m_CanonControllable = value;
+            if ((m_CameraBehavior.enabled && value) ||
+                (!m_CameraBehavior.enabled && !value))
+            {
+                //------------------------------------------------------
+                //Speichere/Lade Kamera Position & Rotation
+                //------------------------------------------------------
+                if (value)
+                {
+                    m_CameraPositionSave = Camera.main.transform.position;
+                    m_CameraRotationSave = Camera.main.transform.rotation;
+                }
+                else
+                {
+                    Camera.main.transform.SetPositionAndRotation(m_CameraPositionSave, m_CameraRotationSave);
+                }
+                //-----------------------------------------------------
+                //Wechsle zw. Kamera/Kanonenkontrolle
+                //-----------------------------------------------------
+                m_CameraBehavior.enabled = !value;
+                m_CanonControllable = value;                
+            }
         }
     }
 
@@ -82,6 +118,10 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //Hole Referenz auf LineRenderer
         //------------------------------------------------------
         m_ShotRenderer = gameObject.GetComponent<LineRenderer>();
+        //------------------------------------------------------
+        //Setzte Interval zurück
+        //------------------------------------------------------
+        m_CancelCurrent = m_CancelInterval;
     }
 
     /// <summary>
@@ -97,7 +137,7 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //------------------------------------------------------
             //Switche Kanonenkontrolle an/aus
             //------------------------------------------------------
-            CanonControl = !CanonControl;
+            CannonControl = !CannonControl;
         }
     }    
 
@@ -108,8 +148,8 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //------------------------------------------------------
         if (!UIManager.Instance.EditEnabled)
         {
-            if (CanonControl)
-                CanonControl = !CanonControl;
+            if (CannonControl)
+                CannonControl = !CannonControl;
             if (m_ShotRenderer.positionCount > 0)
                 m_ShotRenderer.positionCount = 0;
         }
@@ -124,8 +164,13 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //-----------------------------------------------------
         //Return falls nicht kontrolliert wird
         //------------------------------------------------------
-        if (!CanonControl)
+        if (!CannonControl)
             return;
+        //------------------------------------------------------
+        //Kamera schaut nun auf das Ziel der Kanone
+        //------------------------------------------------------
+        if (m_ShotRenderer.positionCount > 0)
+            Camera.main.transform.LookAt(m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1));
         //-----------------------------------------------------
         //Ansonsten falls zwei Finger den Bildschirm berühren
         //-----------------------------------------------------
@@ -133,6 +178,10 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         {
             Touch m_TouchZero, m_TouchOne;
             Vector2 m_PrevTouchZero, m_PrevTouchOne;
+            //-----------------------------------------------------
+            //Setzte Timer zurück
+            //-----------------------------------------------------
+            m_CancelCurrent = m_CancelInterval;
             //-----------------------------------------------------
             //Bestimme Touchpunkte (alte und neue)
             //-----------------------------------------------------
@@ -155,6 +204,21 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //Update Schussanzeige
             //-----------------------------------------------------
             ShowShot();
+        }
+        else if(Input.touchCount > 0)
+        {
+            //-----------------------------------------------------
+            //Aktualisiere Timer, beende ggf. Kanonenmodus
+            //-----------------------------------------------------
+            if (m_CancelCurrent <= 0.0f)
+            {
+                CannonControl = !CannonControl;
+                m_CancelCurrent = m_CancelInterval;
+            }
+            else
+            {
+                m_CancelCurrent -= Time.unscaledDeltaTime;
+            }
         }
     }
 
@@ -244,10 +308,12 @@ class Cannon : MonoBehaviour, IPointerDownHandler
                 Physics.Raycast(m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1),
                                 m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1) - l_NextPos,
                                 Mathf.Infinity, LayerMask.GetMask("DeathZone"), QueryTriggerInteraction.Collide))
+            {
                 //-----------------------------------------------------
                 //..Dann verlasse die Schleife
                 //-----------------------------------------------------
                 break;
+            }
             else
             {
                 //-----------------------------------------------------
