@@ -197,10 +197,10 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 if (UIManager.Instance.EditEnabled && !UIManager.Instance.OverlayEnabled && !m_CancelTouch &&
                     Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Dominos")))
                 {
-                    //------------------------------------------------------
-                    //Ändere nur falls es ein normaler Domino ist
-                    //------------------------------------------------------
-                    if (l_Hit.transform.CompareTag("DominoStandart") || l_Hit.transform.CompareTag("Start"))
+                    //--------------------------------------------------------
+                    //Setzte Reihenstart nur falls Start oder Domino getroffen
+                    //--------------------------------------------------------
+                    if (l_Hit.transform.tag.Contains("Domino") || l_Hit.transform.CompareTag("Start"))
                     {
                         //------------------------------------------------------
                         //Füge Position in die Liste ein
@@ -278,7 +278,7 @@ public class DominoSpawner : MonoBehaviour, UndoChange
                 //Falls im Editmode und das Level getroffen wurde
                 //------------------------------------------------------
                 if (UIManager.Instance.EditEnabled && !UIManager.Instance.OverlayEnabled && !m_CancelTouch &&
-                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")))
+                    Physics.Raycast(l_Ray, out l_Hit, Mathf.Infinity, LayerMask.GetMask("Terrain")) && Input.GetTouch(0).phase != TouchPhase.Stationary)
                 {
                     //--------------------------------------------------------------
                     //Falls der Boden getroffen wurde
