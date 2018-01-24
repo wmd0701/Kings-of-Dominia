@@ -27,6 +27,11 @@ class Cannon : MonoBehaviour, IPointerDownHandler
     private LineRenderer m_ShotRenderer;
     [Header("Settings")]
     //------------------------------------------------------
+    //Abstand der Kamera vom Punkt im Kanonenmodus
+    //------------------------------------------------------
+    [SerializeField]
+    private float m_CameraDistance;
+    //------------------------------------------------------
     //Geschwindigkeit des Schusses
     //------------------------------------------------------
     [SerializeField]
@@ -88,16 +93,38 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             if ((m_CameraBehavior.enabled && value) ||
                 (!m_CameraBehavior.enabled && !value))
             {
-                //------------------------------------------------------
-                //Speichere/Lade Kamera Position & Rotation
-                //------------------------------------------------------
+                //-----------------------------------------------------------
+                //Je nach dem ob Kanonenmodus aktiviert oder deaktiviert wird
+                //-----------------------------------------------------------
                 if (value)
                 {
+                    //------------------------------------------------------
+                    //Speichere/Lade Kamera Position & Rotation
+                    //------------------------------------------------------
                     m_CameraPositionSave = Camera.main.transform.position;
                     m_CameraRotationSave = Camera.main.transform.rotation;
+                    //------------------------------------------------------
+                    //Kameraziel ist prinzipiell die Kanone
+                    //------------------------------------------------------
+                    Vector3 l_CameraPos = m_Cannon.transform.position + new Vector3(0, m_CameraDistance, 0);
+                    //----------------------------------------------------------
+                    //Falls es aber ein Kanonenziel gibt, ist das das Kameraziel
+                    //----------------------------------------------------------
+                    if (m_ShotRenderer.positionCount > 0)
+                    {
+                        l_CameraPos = m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1) +
+                            new Vector3(0, m_CameraDistance, 0);
+                    }
+                    //----------------------------------------------------------
+                    //Bewege Kamera über das bestimmte Ziel, nach unten schauend
+                    //----------------------------------------------------------
+                    Camera.main.transform.SetPositionAndRotation(l_CameraPos, Quaternion.LookRotation(Vector3.down));
                 }
                 else
                 {
+                    //------------------------------------------------------
+                    //Stelle vorherige Kameraposition wieder her
+                    //------------------------------------------------------
                     Camera.main.transform.SetPositionAndRotation(m_CameraPositionSave, m_CameraRotationSave);
                 }
                 //-----------------------------------------------------
@@ -163,8 +190,13 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         //------------------------------------------------------
         else
         {
+            //------------------------------------------------------
+            //Update Positionen nur falls es noch keine gibt
+            //------------------------------------------------------
             if (m_ShotRenderer.positionCount == 0)
+            {
                 ShowShot();
+            }
         }
         //-----------------------------------------------------
         //Return falls nicht kontrolliert wird
@@ -172,10 +204,21 @@ class Cannon : MonoBehaviour, IPointerDownHandler
         if (!CannonControl)
             return;
         //------------------------------------------------------
-        //Kamera schaut nun auf das Ziel der Kanone
+        //Falls die Kanone auf etwas zielt (Renderer aktiv..)
         //------------------------------------------------------
         if (m_ShotRenderer.positionCount > 0)
-            Camera.main.transform.LookAt(m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1));
+        {
+            //------------------------------------------------------
+            //Bestimme Position überhalb des Ziels
+            //------------------------------------------------------
+            Vector3 l_MoveTo = m_ShotRenderer.GetPosition(m_ShotRenderer.positionCount - 1) + 
+                new Vector3(0, m_CameraDistance, 0);
+            //------------------------------------------------------
+            //Bewege Kamera smooth zum Ziel
+            //------------------------------------------------------
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position,
+                l_MoveTo, 3.0f * Time.unscaledDeltaTime);
+        }
         //-----------------------------------------------------
         //Ansonsten falls zwei Finger den Bildschirm berühren
         //-----------------------------------------------------

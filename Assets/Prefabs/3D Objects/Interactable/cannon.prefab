@@ -486,6 +486,7 @@ MonoBehaviour:
     type: 2}
   m_CannonSpawn: {fileID: 4914735687716182}
   m_Cannon: {fileID: 4634658310253024}
+  m_CameraDistance: 50
   m_ShotVelocity: 60
   m_ShotRenderResolution: 2
   m_ShotCount: 1
