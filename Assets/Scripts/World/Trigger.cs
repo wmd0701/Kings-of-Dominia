@@ -46,25 +46,24 @@ public class Trigger : MonoBehaviour
             //------------------------------------------------------
             //Je nach Triggertyp..
             //------------------------------------------------------
-            switch (m_Type)
-            {
-                case TriggerType.None:
+			switch (m_Type) {
+			case TriggerType.None:
                     //------------------------------------------------------
                     //Warnung das kein Typ festgelegt wurde
                     //------------------------------------------------------                    
-                    Debug.LogWarning("No trigger type assigned!");
-                    break;
-                case TriggerType.Gate:
+				Debug.LogWarning ("No trigger type assigned!");
+				break;
+			case TriggerType.Gate:
                     //------------------------------------------------------
                     //Öffne Tor
                     //------------------------------------------------------
-                    gameObject.GetComponentInParent<Gate>().OpenGate();
-                    break;
-                case TriggerType.Cannon:
+				gameObject.GetComponentInParent<Gate> ().OpenGate ();
+				break;
+			case TriggerType.Cannon:
                     //------------------------------------------------------
                     //Feuere die Kanone ab
                     //------------------------------------------------------
-                    gameObject.GetComponentInParent<Cannon>().Shoot();
+				gameObject.GetComponentInParent<Cannon> ().Shoot ();
                     break;
             }
             //------------------------------------------------------

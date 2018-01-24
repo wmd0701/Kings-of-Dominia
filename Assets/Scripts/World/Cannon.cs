@@ -258,6 +258,9 @@ class Cannon : MonoBehaviour, IPointerDownHandler
             //------------------------------------------------------
             m_ShotCount--;
         }
+
+		//Vibration when the canon shoots 
+		Vibration.Vibrate(1000);
     }
 
     /// <summary>
