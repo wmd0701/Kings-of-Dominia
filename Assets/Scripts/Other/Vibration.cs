@@ -25,8 +25,12 @@ public static class Vibration
         //----------------------------------------
         if (isAndroid())
 			vibrator.Call("vibrate", pi_Milliseconds);
-		else
+        else
+        {
+            #if !UNITY_STANDALONE && !UNITY_EDITOR
 			Handheld.Vibrate();
+            #endif
+        }
 	}
 
     /// <summary>
@@ -40,9 +44,13 @@ public static class Vibration
         //----------------------------------------
         if (isAndroid())
 			vibrator.Call("vibrate", pi_Pattern, pi_RepeatStep);
-		else
+        else
+        {
+            #if !UNITY_STANDALONE && !UNITY_EDITOR
 			Handheld.Vibrate();
-	}
+            #endif
+        }
+    }
 
     /// <summary>
     /// Bricht aktuelle Vibration ab
@@ -57,10 +65,10 @@ public static class Vibration
     /// </summary>
 	private static bool isAndroid()
 	{
-		#if UNITY_ANDROID && !UNITY_EDITOR
+        #if UNITY_ANDROID && !UNITY_EDITOR
 		return true;
-		#else
+        #else
 		return false;
-		#endif
+        #endif
 	}
 }
