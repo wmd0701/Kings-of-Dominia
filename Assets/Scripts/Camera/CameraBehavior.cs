@@ -9,7 +9,7 @@ public class CameraBehavior : MonoBehaviour
     //Zoomgeschwindigkeit
     //------------------------------------------------------
     [SerializeField]
-    private float m_ZoomSpeed = 40f;
+    private float m_ZoomSpeed = 35f;
     //------------------------------------------------------
     //Maximale/Minimale Kamerahöhe
     //------------------------------------------------------
@@ -21,7 +21,7 @@ public class CameraBehavior : MonoBehaviour
     //Kamerageschwindigkeit
     //------------------------------------------------------
     [SerializeField]
-    private float m_MoveSpeed = 8f;
+    private float m_MoveSpeed = 6f;
     //------------------------------------------------------
     //Rotationsgeschwindigkeit (um Y)
     //------------------------------------------------------
