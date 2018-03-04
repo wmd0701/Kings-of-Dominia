@@ -141,7 +141,7 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-    #region "Catch Events"
+    #region Catch Events
 
     /// <summary>
     /// Wenn das Script aktiviert wird
@@ -239,6 +239,17 @@ public class UIManager : MonoBehaviour
         //Lade sie neu
         //------------------------------------------------------
         SceneManager.LoadScene(l_Current.buildIndex);
+    }
+
+    /// <summary>
+    /// Zurück zum Hauptmenü
+    /// </summary>
+    public void MainMenu()
+    {
+        //------------------------------------------------------
+        //Lade das Hauptmenü (Szene 0)
+        //------------------------------------------------------
+        SceneManager.LoadScene(0);
     }
 
     #endregion
