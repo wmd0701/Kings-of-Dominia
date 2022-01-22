@@ -9,7 +9,7 @@ To find out more, please visit the provided project link.
 
 Knock down the King
 ![Knock down the King](https://user-images.githubusercontent.com/34072813/150656674-f44be52a-3049-4a81-89ce-4c07fdfea259.PNG | width=200)
-
+<img src="https://user-images.githubusercontent.com/34072813/150656674-f44be52a-3049-4a81-89ce-4c07fdfea259.PNG" width=50% height=50%>
 
 Level complete
 ![Level complete](https://user-images.gith | width=200ubusercontent.com/34072813/150656810-da3e8283-a2af-45f2-a70b-3e501fa6e271.PNG | width=200)
