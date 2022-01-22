@@ -5,7 +5,7 @@ This game features domino-based puzzles set in a fantastical medieval world.
 
 For fast try, either download the [Windows](https://alexanderepple.de/wp-content/uploads/2020/04/Windows.zip) version or the [Android](https://alexanderepple.de/wp-content/uploads/2020/04/Android.zip) version. 
 
-The game heavily relies on TouchScreen. To find out more, please visit the provided project link.
+The game relies heavily on touch screen. To find out more, please visit the [personal website](https://alexanderepple.de/portfolio/kings-of-dominia/) of project leader.
 
 # Game Play
 
